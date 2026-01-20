@@ -14,4 +14,5 @@ public class Articulo {
     private String descripcion;
     private int existencias;
     private double pvp;
+    
 }

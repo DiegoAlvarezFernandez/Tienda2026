@@ -11,6 +11,6 @@ package es.educastur.diegoaf65.practicastienda;
 public class PracticasTienda {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        
     }
 }

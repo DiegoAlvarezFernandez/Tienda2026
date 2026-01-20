@@ -12,4 +12,5 @@ package es.educastur.diegoaf65.practicastienda;
 public class LineaPedido {
     private String idArticulo;
     private int unidades;
+    
 }
