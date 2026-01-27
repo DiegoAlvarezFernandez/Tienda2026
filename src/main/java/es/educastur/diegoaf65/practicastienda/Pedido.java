@@ -9,6 +9,10 @@ package es.educastur.diegoaf65.practicastienda;
  * @author 1dawd21
  */
 
+/*
+Este es un comentario de Documentación JavaDoc
+*/
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 

@@ -9,6 +9,10 @@ package es.educastur.diegoaf65.practicastienda;
  * @author 1dawd21
  */
 
+/*
+Este es un comentario de Documentación JavaDoc
+*/
+
 public class Cliente {
     private String idCliente;
     private String nombre;

@@ -194,7 +194,7 @@ public class PracticasTienda {
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="PEDIDOS">
-    public static void menuPedidos(){
+    public void menuPedidos(){
         int opcion;
         do{
             System.out.println("\t MENU DE OPCIONES");
@@ -223,8 +223,28 @@ public class PracticasTienda {
         while(opcion != 4);
     }
     
-    public static void nuevoPedido(){
-        
+    private void nuevoPedido(){
+      String idCliente;
+      do{
+          System.out.println("DNI CLIENTE:");
+          idCliente = sc.nextLine().toUpperCase();
+      }
+      while (!MetodosAux.validarDNI(idCliente));
+      
+      ArrayList <LineaPedido> cestaCompra = new ArrayList();
+      String idArticulo;
+      int unidades = 0;
+      do{
+          System.out.print("\nTeclee el ID del articulo deseado: ");
+          idArticulo = sc.nextLine();
+          System.out.print("\nTeclee las unidades deseadas: ");
+          unidades = sc.nextInt();
+          cestaCompra.add(new LineaPedido(idArticulo, unidades));
+      }
+      while (idArticulo.equalsIgnoreCase("FIN"));
+      
+      Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
+      pedidos.add(p);
     }
     
     public static void listadoPedidos(){
@@ -233,6 +253,19 @@ public class PracticasTienda {
     
     public static void totalPedidos(){
         
+    }
+    
+    public String generaIdPedido (String idCliente){
+        int contador = 0;
+        String nuevoId;
+        for (Pedido p : pedidos){
+            if (p.getClientePedido().getIdCliente().equalsIgnoreCase(idCliente)){
+                contador++;
+            }
+        }
+        contador++;
+        nuevoId = idCliente + "-" + String.format("%03d", contador) + "/" + LocalDate.now().getYear();
+        return nuevoId;
     }
 //</editor-fold>
     

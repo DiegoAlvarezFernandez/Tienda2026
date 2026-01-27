@@ -9,6 +9,10 @@ package es.educastur.diegoaf65.practicastienda;
  * @author 1dawd21
  */
 
+/*
+Este es un comentario de Documentación JavaDoc
+*/
+
 public class MetodosAux{
     
     public static boolean esInt(String s) {
