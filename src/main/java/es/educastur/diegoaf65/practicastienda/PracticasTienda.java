@@ -8,12 +8,14 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Comparator;
 
 /**
  *
  * @author 1dawd21
  */
-//<editor-fold defaultstate="collapsed" desc="CLASES">
+
+    //<editor-fold defaultstate="collapsed" desc="CLASES">
 public class PracticasTienda {
 
     private static Scanner sc = new Scanner(System.in);
@@ -195,8 +197,7 @@ public class PracticasTienda {
             System.out.println("\t MENU DE OPCIONES");
             System.out.println("\t --> 1 - NUEVO PEDIDO");
             System.out.println("\t --> 2 - LSTADO PEDIDOS");
-            System.out.println("\t --> 3 - TOTAL PEDIDOS");
-            System.out.println("\t --> 4 - SALIR");
+            System.out.println("\t --> 3 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -209,18 +210,14 @@ public class PracticasTienda {
                     listadoPedidos();
                     break;
                 }
-                case 3: {
-                    totalPedidos();
-                    break;
-                }
             }
-        } while (opcion != 4);
+        } while (opcion != 3);
     }
 
     private void nuevoPedido() {
         String idCliente;
+        System.out.print("\nDNI CLIENTE: ");
         do {
-            System.out.println("DNI CLIENTE:");
             idCliente = sc.nextLine().toUpperCase();
         } while (!MetodosAux.validarDNI(idCliente));
 
@@ -229,7 +226,7 @@ public class PracticasTienda {
         int unidades = 0;
         System.out.print("\nTeclee el ID del articulo deseado (Teclee FIN para terminar la compra): ");
         idArticulo = sc.next();
-        while (idArticulo.equalsIgnoreCase("FIN")) {
+        while (!idArticulo.equalsIgnoreCase("FIN")) {
             System.out.print("\nTeclee las unidades deseadas: ");
             unidades = sc.nextInt();
             try {
@@ -239,7 +236,7 @@ public class PracticasTienda {
                 System.out.println(ex.getMessage());
             } catch (StockInsuficiente ex) {
                 System.out.println(ex.getMessage());
-                System.out.print("Las quieres (SI/NO): ");
+                System.out.print("\nLas quieres (SI/NO): ");
                 String respuesta = sc.next();
                 if (respuesta.equalsIgnoreCase("SI")) {
                     cestaCompra.add(new LineaPedido(idArticulo, articulos.get(idArticulo).getExistencias()));
@@ -250,16 +247,24 @@ public class PracticasTienda {
             idArticulo = sc.next();
         }
         if (!cestaCompra.isEmpty()) {
-            System.out.println("Este es tu pedido:");
+            System.out.println("\nEste es tu pedido:");
+            double totalPedido = 0;
+            double totalLinea = 0;
             for (LineaPedido l : cestaCompra) {
+                totalLinea = l.getUnidades()*articulos.get(l.getIdArticulo()).getPvp();
+                totalPedido += totalLinea;
                 System.out.println(l.getIdArticulo() + " - "
                         + articulos.get(l.getIdArticulo()).getDescripcion() + " - "
-                        + l.getUnidades());
+                        + l.getUnidades() + " - "
+                        + articulos.get(l.getIdArticulo()).getPvp() + " - " 
+                        + totalLinea);
             }
-            System.out.print("Procedemos con la compra (SI/NO): ");
+            System.out.print("Total: " + totalPedido);
+            System.out.print("\nProcedemos con la compra (SI/NO): ");
             String respuesta = sc.next();
             if (respuesta.equalsIgnoreCase("SI")) {
-                pedidos.add(new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra));
+                String idPedido = generaIdPedido(idCliente);
+                pedidos.add(new Pedido(idPedido, clientes.get(idCliente), LocalDate.now(), cestaCompra));
                 for (LineaPedido l : cestaCompra) {
                     articulos.get(l.getIdArticulo()).setExistencias(articulos.get(l.getIdArticulo()).getExistencias() - l.getUnidades());
                 }
@@ -267,23 +272,25 @@ public class PracticasTienda {
         }
     }
 
-    public static void listadoPedidos() {
-
+    private void listadoPedidos() {
+        System.out.println("");
+        for (Pedido p : pedidos) {
+            System.out.println(p + "- Total: " + totalPedidos(p));
+        }
+        System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
+                .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
+        System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos((Pedido)p)).reversed())
+                .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
     }
 
-    public static void totalPedidos() {
-
-    }
-
-    private void chequeadorStock(String idArticulo, int unidades) throws StockCero, StockInsuficiente {
-        if (articulos.get(idArticulo).getExistencias() == 0) {
-            throw new StockCero("0 unidades disponibles de: "
-                    + articulos.get(idArticulo).getDescripcion());
+    private double totalPedidos(Pedido p) {
+        double totalPedido = 0;
+        for (LineaPedido l : p.getCestaCompra()) {
+            totalPedido += l.getUnidades() * articulos.get(l.getIdArticulo()).getPvp();
         }
-        if (articulos.get(idArticulo).getExistencias() < unidades) {
-            throw new StockInsuficiente("Solo hay " + articulos.get(idArticulo).getExistencias()
-                    + " unidades disponibles de: " + articulos.get(idArticulo).getDescripcion());
-        }
+        return totalPedido;
     }
 
     private String generaIdPedido(String idCliente) {
@@ -297,6 +304,17 @@ public class PracticasTienda {
         contador++;
         nuevoId = idCliente + "-" + String.format("%03d", contador) + "/" + LocalDate.now().getYear();
         return nuevoId;
+    }
+    
+    private void chequeadorStock(String idArticulo, int unidades) throws StockCero, StockInsuficiente {
+        if (articulos.get(idArticulo).getExistencias() == 0) {
+            throw new StockCero("\n0 unidades disponibles de: "
+                    + articulos.get(idArticulo).getDescripcion());
+        }
+        if (articulos.get(idArticulo).getExistencias() < unidades) {
+            throw new StockInsuficiente("\nSolo hay " + articulos.get(idArticulo).getExistencias()
+                    + " unidades disponibles de: " + articulos.get(idArticulo).getDescripcion());
+        }
     }
 //</editor-fold>
 
