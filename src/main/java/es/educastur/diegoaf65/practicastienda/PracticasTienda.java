@@ -275,7 +275,7 @@ public class PracticasTienda {
     private void listadoPedidos() {
         System.out.println("");
         for (Pedido p : pedidos) {
-            System.out.println(p + "- Total: " + totalPedidos(p));
+            System.out.println(p + " - Total: " + totalPedidos(p));
         }
         System.out.println("\n");
         pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
