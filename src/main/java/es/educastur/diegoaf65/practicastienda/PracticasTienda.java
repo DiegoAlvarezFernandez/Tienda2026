@@ -22,6 +22,30 @@ public class PracticasTienda {
     private ArrayList<Pedido> pedidos;
     private HashMap<String, Articulo> articulos;
     private HashMap<String, Cliente> clientes;
+
+    public ArrayList<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(ArrayList<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+
+    public HashMap<String, Articulo> getArticulos() {
+        return articulos;
+    }
+
+    public void setArticulos(HashMap<String, Articulo> articulos) {
+        this.articulos = articulos;
+    }
+
+    public HashMap<String, Cliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(HashMap<String, Cliente> clientes) {
+        this.clientes = clientes;
+    }
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="COLECCIONES">
@@ -36,7 +60,7 @@ public class PracticasTienda {
     public static void main(String[] args) {
         PracticasTienda p = new PracticasTienda();
         p.cargaDatos();
-        p.menuOpciones();
+        //p.menuOpciones();
     }
 //</editor-fold>
 
@@ -285,7 +309,7 @@ public class PracticasTienda {
                 .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
     }
 
-    private double totalPedidos(Pedido p) {
+    public double totalPedidos(Pedido p) {
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
             totalPedido += l.getUnidades() * articulos.get(l.getIdArticulo()).getPvp();
