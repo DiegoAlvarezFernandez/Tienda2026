@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -72,7 +74,8 @@ public class PracticasTienda {
             System.out.println("\t --> 1 - GESTION ARTICULOS");
             System.out.println("\t --> 2 - GESTION CLIENTES");
             System.out.println("\t --> 3 - GESTION PEDIDOS");
-            System.out.println("\t --> 4 - SALIR");
+            System.out.println("\t --> 4 - LISTADOs STREAMS");
+            System.out.println("\t --> 5 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -89,8 +92,12 @@ public class PracticasTienda {
                     menuPedidos();
                     break;
                 }
+                case 4: {
+                    listadosStreams();
+                    break;
+                }
             }
-        } while (opcion != 4);
+        } while (opcion != 5);
     }
 //</editor-fold>
 
@@ -255,7 +262,7 @@ public class PracticasTienda {
             unidades = sc.nextInt();
             try {
                 chequeadorStock(idArticulo, unidades);
-                cestaCompra.add(new LineaPedido(idArticulo, unidades));
+                cestaCompra.add(new LineaPedido(articulos.get(idArticulo), unidades));
             } catch (StockCero ex) {
                 System.out.println(ex.getMessage());
             } catch (StockInsuficiente ex) {
@@ -263,7 +270,7 @@ public class PracticasTienda {
                 System.out.print("\nLas quieres (SI/NO): ");
                 String respuesta = sc.next();
                 if (respuesta.equalsIgnoreCase("SI")) {
-                    cestaCompra.add(new LineaPedido(idArticulo, articulos.get(idArticulo).getExistencias()));
+                    cestaCompra.add(new LineaPedido(articulos.get(idArticulo), articulos.get(idArticulo).getExistencias()));
                     articulos.get(idArticulo).setExistencias(0);
                 }
             }
@@ -275,12 +282,12 @@ public class PracticasTienda {
             double totalPedido = 0;
             double totalLinea = 0;
             for (LineaPedido l : cestaCompra) {
-                totalLinea = l.getUnidades()*articulos.get(l.getIdArticulo()).getPvp();
+                totalLinea = l.getUnidades()*l.getArticulo().getPvp();
                 totalPedido += totalLinea;
-                System.out.println(l.getIdArticulo() + " - "
-                        + articulos.get(l.getIdArticulo()).getDescripcion() + " - "
+                System.out.println(l.getArticulo() + " - "
+                        + l.getArticulo().getDescripcion() + " - "
                         + l.getUnidades() + " - "
-                        + articulos.get(l.getIdArticulo()).getPvp() + " - " 
+                        + l.getArticulo().getPvp() + " - " 
                         + totalLinea);
             }
             System.out.print("Total: " + totalPedido);
@@ -290,7 +297,7 @@ public class PracticasTienda {
                 String idPedido = generaIdPedido(idCliente);
                 pedidos.add(new Pedido(idPedido, clientes.get(idCliente), LocalDate.now(), cestaCompra));
                 for (LineaPedido l : cestaCompra) {
-                    articulos.get(l.getIdArticulo()).setExistencias(articulos.get(l.getIdArticulo()).getExistencias() - l.getUnidades());
+                    l.getArticulo().setExistencias(l.getArticulo().getExistencias() - l.getUnidades());
                 }
             }
         }
@@ -312,7 +319,7 @@ public class PracticasTienda {
     public double totalPedidos(Pedido p) {
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
-            totalPedido += l.getUnidades() * articulos.get(l.getIdArticulo()).getPvp();
+            totalPedido += l.getUnidades() * l.getArticulo().getPvp();
         }
         return totalPedido;
     }
@@ -341,30 +348,59 @@ public class PracticasTienda {
         }
     }
 //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="STREAMS">
+    private void listadosStreams(){
+        articulos.values().stream().filter(a->a.getPvp()<100)
+                                   .sorted(Comparator.comparing(Articulo::getPvp))
+                                   .forEach(a->System.out.println(a));
+        
+        System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
+                        .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
+        
+        System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos((Pedido)p)).reversed())
+                        .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
+        
+        System.out.println("\n");
+        pedidos.stream().filter(p->totalPedidos(p)<1000)
+                        .sorted(Comparator.comparing(Pedido::getFechaPedido))
+                        .forEach(p->System.out.println(p + " - Total: " + p.getFechaPedido()));
+        
+        var numPedidos = pedidos.stream().filter(p->p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
+                                          .count();
+        System.out.println(numPedidos);
+        
+        Map<Cliente, Long> numPedidosPorCliente =
+        pedidos.stream().collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
+    }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
-    public void cargaDatos() {
+     public void cargaDatos() {
         clientes.put("80580845T", new Cliente("80580845T", "ANA ", "658111111", "ana@gmail.com"));
         clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
         clientes.put("63921307Y", new Cliente("63921307Y", "JUAN", "652333333", "juan@gmail.com"));
         clientes.put("02337565Y", new Cliente("02337565Y", "EDU", "634567890", "edu@gmail.com"));
 
-        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 14, 15));
-        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 9, 18));
-        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 16, 80));
+        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 0, 15));
+        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 5, 18));
+        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 15, 80));
         articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
         articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
+        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800 ", 2, 200));
         articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
         articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
         articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
         articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
 
         LocalDate hoy = LocalDate.now();
-        pedidos.add(new Pedido("80580845T-001/2025", clientes.get("80580845T"), hoy.minusDays(1), new ArrayList<>(List.of(new LineaPedido("1-11", 3), new LineaPedido("4-22", 3)))));
-        pedidos.add(new Pedido("80580845T-002/2025", clientes.get("80580845T"), hoy.minusDays(2), new ArrayList<>(List.of(new LineaPedido("4-11", 3), new LineaPedido("4-22", 2), new LineaPedido("4-33", 4)))));
-        pedidos.add(new Pedido("36347775R-001/2025", clientes.get("36347775R"), hoy.minusDays(3), new ArrayList<>(List.of(new LineaPedido("4-22", 1), new LineaPedido("2-22", 3)))));
-        pedidos.add(new Pedido("36347775R-002/2025", clientes.get("36347775R"), hoy.minusDays(5), new ArrayList<>(List.of(new LineaPedido("4-33", 3), new LineaPedido("2-11", 3)))));
-        pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido("2-11", 5), new LineaPedido("2-33", 3), new LineaPedido("4-33", 2)))));
+        pedidos.add(new Pedido("80580845T-001/2025", clientes.get("80580845T"), hoy.minusDays(1), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
+        pedidos.add(new Pedido("80580845T-002/2025", clientes.get("80580845T"), hoy.minusDays(2), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
+        pedidos.add(new Pedido("36347775R-001/2025", clientes.get("36347775R"), hoy.minusDays(3), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-22"), 1), new LineaPedido(articulos.get("2-22"), 3)))));
+        pedidos.add(new Pedido("36347775R-002/2025", clientes.get("36347775R"), hoy.minusDays(5), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
+        pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
     }
 //</editor-fold>
 
