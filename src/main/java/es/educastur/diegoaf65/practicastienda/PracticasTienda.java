@@ -368,12 +368,53 @@ public class PracticasTienda {
                         .sorted(Comparator.comparing(Pedido::getFechaPedido))
                         .forEach(p->System.out.println(p + " - Total: " + p.getFechaPedido()));
         
-        var numPedidos = pedidos.stream().filter(p->p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
+        long numPedidos = pedidos.stream().filter(p->p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
                                           .count();
         System.out.println(numPedidos);
         
         Map<Cliente, Long> numPedidosPorCliente =
         pedidos.stream().collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
+        
+        System.out.println("\n");
+        for (Articulo a: articulos.values()){
+            int total = 0;
+            for (Pedido p: pedidos){
+                total += p.getCestaCompra().stream().filter(l->l.getArticulo().equals(a))
+                                                    .mapToInt(LineaPedido::getUnidades).sum();
+            }
+            System.out.println(a + " - " + total);
+        }
+    }   
+    
+    //Comparativa entre 3 diferentes maneras (básica, media y avanzada) de hacer el método "unidadesVendidas"
+    
+    private int unidadesVendidas1(Articulo a){ //Básica
+        int total = 0;
+        for (Pedido p : pedidos){
+            for (LineaPedido lp : p.getCestaCompra()){
+                if (lp.getArticulo().equals(a)){
+                    total += lp.getUnidades();
+                }
+            }
+        }
+        return total;
+    }
+    
+    private int unidadesVendidas2(Articulo a){ //Media
+        int total = 0;
+        for (Pedido p: pedidos){
+            total += p.getCestaCompra().stream().filter(l->l.getArticulo().equals(a))
+                                                .mapToInt(LineaPedido::getUnidades)
+                                                .sum();
+        }
+        return total;
+    }
+    
+    private int unidadesVendidas3(Articulo a){ //Avanzada
+        return pedidos.stream().flatMap(p->p.getCestaCompra().stream())
+                               .filter(l->l.getArticulo().equals(a))
+                               .mapToInt(LineaPedido::getUnidades)
+                               .sum();
     }
     //</editor-fold>
 
