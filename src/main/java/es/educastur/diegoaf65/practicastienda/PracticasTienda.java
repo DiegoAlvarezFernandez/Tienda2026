@@ -388,7 +388,12 @@ public class PracticasTienda {
     
     public double totalCliente2(Cliente c){
         return pedidos.stream().filter(p->p.getClientePedido().equals(c))
-                      .mapToDouble(p->totalPedidos(p)).sum();
+                               .mapToDouble(p->totalPedidos(p)).sum();
+    }
+    
+    public double totalPedido2(Pedido p){
+        return p.getCestaCompra().stream().mapToDouble(l->l.getArticulo().getPvp()
+                                          *l.getUnidades()).sum();
     }
     
     //Comparativa entre 3 diferentes maneras (básica, media y avanzada) de hacer el método "unidadesVendidas"
