@@ -261,7 +261,7 @@ public class PracticasTienda {
             System.out.print("\nTeclee las unidades deseadas: ");
             unidades = sc.nextInt();
             try {
-                chequeadorStock(idArticulo, unidades);
+                chequeadorStock(articulos.get(idArticulo), unidades);
                 cestaCompra.add(new LineaPedido(articulos.get(idArticulo), unidades));
             } catch (StockCero ex) {
                 System.out.println(ex.getMessage());
@@ -337,14 +337,14 @@ public class PracticasTienda {
         return nuevoId;
     }
     
-    private void chequeadorStock(String idArticulo, int unidades) throws StockCero, StockInsuficiente {
-        if (articulos.get(idArticulo).getExistencias() == 0) {
+    private void chequeadorStock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
+        if (a.getExistencias() == 0) {
             throw new StockCero("\n0 unidades disponibles de: "
-                    + articulos.get(idArticulo).getDescripcion());
+                    + a.getDescripcion());
         }
-        if (articulos.get(idArticulo).getExistencias() < unidades) {
-            throw new StockInsuficiente("\nSolo hay " + articulos.get(idArticulo).getExistencias()
-                    + " unidades disponibles de: " + articulos.get(idArticulo).getDescripcion());
+        if (a.getExistencias() < unidades) {
+            throw new StockInsuficiente("\nSolo hay " + a.getExistencias()
+                    + " unidades disponibles de: " + a.getDescripcion());
         }
     }
 //</editor-fold>
