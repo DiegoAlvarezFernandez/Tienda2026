@@ -324,7 +324,7 @@ public class PracticasTienda {
         return totalPedido;
     }
 
-    private String generaIdPedido(String idCliente) {
+    public String generaIdPedido(String idCliente) {
         int contador = 0;
         String nuevoId;
         for (Pedido p : pedidos) {
@@ -384,7 +384,12 @@ public class PracticasTienda {
             }
             System.out.println(a + " - " + total);
         }
-    }   
+    }
+    
+    public double totalCliente2(Cliente c){
+        return pedidos.stream().filter(p->p.getClientePedido().equals(c))
+                      .mapToDouble(p->totalPedidos(p)).sum();
+    }
     
     //Comparativa entre 3 diferentes maneras (básica, media y avanzada) de hacer el método "unidadesVendidas"
     
@@ -417,7 +422,7 @@ public class PracticasTienda {
                                .sum();
     }
     //</editor-fold>
-
+    
     //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
      public void cargaDatos() {
         clientes.put("80580845T", new Cliente("80580845T", "ANA ", "658111111", "ana@gmail.com"));
