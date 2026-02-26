@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.TreeMap;
 
 /**
  *
@@ -350,32 +351,57 @@ public class PracticasTienda {
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="STREAMS">
+    public void menuStreams() {
+        int opcion;
+        do {
+            System.out.println("\t MENU DE OPCIONES");
+            System.out.println("\t --> 1 - LISTADOS STREAMS");
+            System.out.println("\t --> 2 - SALIR");
+
+            opcion = sc.nextInt();
+
+            switch (opcion) {
+                case 1: {
+                    listadosStreams();
+                    break;
+                }
+            }
+        } while (opcion != 2);
+    }
+    
     private void listadosStreams(){
+        System.out.println("Listado de todos los articulos que valen mas de 100€:");
         articulos.values().stream().filter(a->a.getPvp()<100)
                                    .sorted(Comparator.comparing(Articulo::getPvp))
                                    .forEach(a->System.out.println(a));
         
         System.out.println("\n");
+        System.out.println("Listado de todos los pedidos de menor a mayor:");
         pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
                         .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
         
         System.out.println("\n");
+        System.out.println("Listado de todos los pedidos de mayor a menor:");
         pedidos.stream().sorted(Comparator.comparing(p->totalPedidos((Pedido)p)).reversed())
                         .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
         
         System.out.println("\n");
+        System.out.println("Listado de todos los pedidos que valen mas de 1000€ de menor a mayor:");
         pedidos.stream().filter(p->totalPedidos(p)<1000)
                         .sorted(Comparator.comparing(Pedido::getFechaPedido))
                         .forEach(p->System.out.println(p + " - Total: " + p.getFechaPedido()));
         
+        System.out.println("Listado de todos los pedidos hechos por el cliente con DNI 80580845T:");
         long numPedidos = pedidos.stream().filter(p->p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
                                           .count();
         System.out.println(numPedidos);
         
+        System.out.println("Listado de todos los pedidos hechos por cada cliente:");
         Map<Cliente, Long> numPedidosPorCliente =
         pedidos.stream().collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
         
         System.out.println("\n");
+        System.out.println("Listado de todas las unidades que hay por cada pedido realizado:");
         for (Articulo a: articulos.values()){
             int total = 0;
             for (Pedido p: pedidos){
@@ -384,6 +410,64 @@ public class PracticasTienda {
             }
             System.out.println(a + " - " + total);
         }
+        
+        System.out.println("Listado de todos los pedidos ordenados por fecha de menor a mayor y almacenados en una lista:");
+        List <Pedido> pedidosOrdenadosFecha = 
+                pedidos.stream().sorted(Comparator.comparing(Pedido::getFechaPedido))
+                                .collect(Collectors.toList());
+        
+        System.out.println("Listado de todos los pedidos ordenados por el total de menor a mayor y almacenados en una coleccion TreeMap:");
+        TreeMap <Double, Pedido> pedidosConTotales = new TreeMap();
+        for (Pedido p : pedidos){
+            pedidosConTotales.put(totalPedidos(p), p);
+        }
+        System.out.println("\n");
+        for (Double total: pedidosConTotales.keySet()){
+            System.out.println(pedidosConTotales.get(total).getIdPedido() + " - " + total);
+        }
+        
+        System.out.println("Listado de todos los pedidos ordenados por el total de mayor a menor y almacenados en una coleccion TreeMap:");
+        TreeMap <Double, Pedido> pedidosConTotales2 = new TreeMap();
+        for (Pedido p : pedidos){
+            pedidosConTotales2.put(totalPedidos(p), p);
+        }
+        System.out.println("\n");
+        for (Double total: pedidosConTotales2.descendingKeySet()){
+            System.out.println(pedidosConTotales2.get(total).getIdPedido() + " - " + total);
+        }
+        
+        System.out.println("Listado de todos los clientes ordenados por las ventas realizadas de mayor a menor y almacenados en una coleccion TreeMap:");
+        TreeMap <Double, Cliente> ventasPorCliente = new TreeMap();
+        for (Cliente c: clientes.values()){
+            ventasPorCliente.put(totalCliente2(c), c);
+        }
+        System.out.println("\n");
+        for (Double totalPorCliente: ventasPorCliente.descendingKeySet()){
+            System.out.println(ventasPorCliente.get(totalPorCliente).getNombre() + " - " + totalPorCliente);
+        }
+        
+        System.out.println("Listado de todos los articulos ordenados por seccion y almacenados en una lista:");
+        List <Articulo> perifericos, almacenamiento, impresoras, monitores;
+        perifericos = articulos.values().stream().filter(a->a.getidArticulo().startsWith("1"))
+                                                 .collect(Collectors.toList());
+        almacenamiento = articulos.values().stream().filter(a->a.getidArticulo().startsWith("2"))
+                                                    .collect(Collectors.toList());
+        impresoras = articulos.values().stream().filter(a->a.getidArticulo().startsWith("3"))
+                                                .collect(Collectors.toList());
+        monitores = articulos.values().stream().filter(a->a.getidArticulo().startsWith("4"))
+                                               .collect(Collectors.toList());
+        
+        System.out.println("Listado posterior al borrado de todos los articulos de la seccion de impresoras:");
+        articulos.values().removeIf(a->a.getidArticulo().startsWith("3"));
+        System.out.println("\n");
+        articulos.values().stream().forEach(a->System.out.println(a));
+        
+        System.out.println("Listado posterior al borrado de todos los pedidos con 3 dias de antiguedad y almacenados en una lista:");
+        List <Pedido> pedidosAntiguos =
+        pedidos.stream().filter(p->p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
+                        .collect(Collectors.toList());
+        pedidos.removeAll(pedidosAntiguos);
+        System.out.println(pedidos);
     }
     
     public double totalCliente2(Cliente c){
