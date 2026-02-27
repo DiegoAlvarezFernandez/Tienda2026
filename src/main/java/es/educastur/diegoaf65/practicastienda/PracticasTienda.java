@@ -4,6 +4,7 @@
 package es.educastur.diegoaf65.practicastienda;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,13 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.TreeMap;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.FileWriter;
 
 /**
  *
@@ -49,7 +57,7 @@ public class PracticasTienda {
     public void setClientes(HashMap<String, Cliente> clientes) {
         this.clientes = clientes;
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="COLECCIONES">
     public PracticasTienda() {
@@ -57,15 +65,15 @@ public class PracticasTienda {
         articulos = new HashMap();
         clientes = new HashMap();
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="MAIN">
     public static void main(String[] args) {
         PracticasTienda p = new PracticasTienda();
-        p.cargaDatos();
-        //p.menuOpciones();
+        //p.cargaDatos();
+        p.menuOpciones();
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="MENU OPCIONES">
     public void menuOpciones() {
@@ -75,8 +83,9 @@ public class PracticasTienda {
             System.out.println("\t --> 1 - GESTION ARTICULOS");
             System.out.println("\t --> 2 - GESTION CLIENTES");
             System.out.println("\t --> 3 - GESTION PEDIDOS");
-            System.out.println("\t --> 4 - LISTADOs STREAMS");
-            System.out.println("\t --> 5 - SALIR");
+            System.out.println("\t --> 4 - LISTADOS STREAMS");
+            System.out.println("\t --> 5 - GESTION ARCHIVOS");
+            System.out.println("\t --> 6 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -97,10 +106,14 @@ public class PracticasTienda {
                     listadosStreams();
                     break;
                 }
+                case 5: {
+                    menuArchivos();
+                    break;
+                }
             }
-        } while (opcion != 5);
+        } while (opcion != 6);
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="ARTICULOS">
     public void menuArticulos() {
@@ -170,7 +183,7 @@ public class PracticasTienda {
     public static void listadoArticulos() {
 
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CLIENTES">
     public static void menuClientes() {
@@ -220,7 +233,7 @@ public class PracticasTienda {
     public static void listadoClientes() {
 
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="PEDIDOS">
     public void menuPedidos() {
@@ -348,7 +361,7 @@ public class PracticasTienda {
                     + " unidades disponibles de: " + a.getDescripcion());
         }
     }
-//</editor-fold>
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="STREAMS">
     public void menuStreams() {
@@ -512,6 +525,141 @@ public class PracticasTienda {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="ARCHIVOS">
+    public void menuArchivos() {
+        int opcion;
+        do {
+            System.out.println("\t MENU DE OPCIONES");
+            System.out.println("\t --> 1 - INFORMACION ARCHIVO");
+            System.out.println("\t --> 2 - BORRAR ARCHIVO");
+            System.out.println("\t --> 3 - CAMBIAR NOMBRE ARCHIVO");
+            System.out.println("\t --> 4 - ESCRIBIR ARCHIVO");
+            System.out.println("\t --> 5 - LEER ARCHIVO");
+            System.out.println("\t --> 6 - GUARDAR CLIENTES");
+            System.out.println("\t --> 7 - SALIR");
+
+            opcion = sc.nextInt();
+
+            switch (opcion) {
+                case 1: {
+                    infoArchivo();
+                    break;
+                }
+                case 2: {
+                    borrarArchivo();
+                    break;
+                }
+                case 3: {
+                    cambiarNombreArchivo();
+                    break;
+                }
+                case 4: {
+                    escribirArchivo();
+                    break;
+                }
+                case 5: {
+                    leerArchivo();
+                    break;
+                }
+                case 6: {
+                    guardarClientes();
+                    break;
+                }
+            }
+        } while (opcion != 7);
+    }
+    
+    public static void infoArchivo(){
+        File f = new File("archivo1.txt");
+        try {
+            f.createNewFile();
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("Nombre: " + f.getName());
+        System.out.println("Ruta: " + f.getAbsolutePath());
+        System.out.println("Tamano en Bytes: " + f.length());
+        System.out.println("Fecha ultima modificacion: " + new Date(f.lastModified()));
+    }
+
+    public static void borrarArchivo(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Archivo a eliminar: ");
+        String nombre = sc.nextLine();
+        File f = new File(nombre);
+        System.out.println(f.getAbsolutePath());
+        if (f.delete()) {
+            System.out.println("Archivo eliminado");
+        }
+        else {
+            System.out.println("No se ha podido eliminar");
+        }
+    }
+
+    public static void cambiarNombreArchivo(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Nombre del Archivo a renombrar: ");
+        String nombre = sc.nextLine();
+        File f1 = new File(nombre);
+        System.out.println("Nuevo nombre?");
+        String nombre2 = sc.nextLine();
+        File f2 = new File(nombre2);
+        if (f1.renameTo(f2)) {
+            System.out.println("Se ha cambiado el nombre");
+        }
+        else {
+            System.out.println("No se ha podido cambiar el nombre");
+        }
+    }
+
+    public static void escribirArchivo(){
+        Scanner sc = new Scanner(System.in);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("archivo1.txt", true))) {
+            String cadena;
+            System.out.println("Teclea lineas de texto + RETORNO - (FIN para terminar)");
+            cadena = sc.nextLine();
+            while (!cadena.equalsIgnoreCase("FIN")) {
+                bw.write(cadena); //Escribe la cadena en el BufferedWriter
+                bw.newLine(); //Añade un salto de línea
+                cadena = sc.nextLine(); //Solicita una nueva cadena
+            }
+        }
+        catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
+    }
+    
+    public static void leerArchivo(){
+        try (BufferedReader br = new BufferedReader(new FileReader("archivo1.txt"))) {
+        String cadena = br.readLine(); //Lee la primera línea del fichero
+            while (cadena != null) { //Mientras no se llegue al final del archivo
+                System.out.println(cadena); //Se nuestra por pantalla
+                cadena = br.readLine(); //Se lee la siguiente línea del archivo
+            }
+        }
+        catch (FileNotFoundException e) {
+        System.out.println(e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void guardarClientes(){
+        Scanner sc = new Scanner(System.in);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv", true))) {
+            for (Cliente c : clientes.values()){
+                bw.write(c.getIdCliente() + " - " + c.getNombre() + " - " + c.getTelefono() + " - " + c.getEmail());
+                bw.newLine();
+            }
+        }
+        catch (IOException e) {
+            System.out.println("No se han podido escribir los clientes en el archivo");
+        }
+    }
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
      public void cargaDatos() {
         clientes.put("80580845T", new Cliente("80580845T", "ANA ", "658111111", "ana@gmail.com"));
@@ -537,6 +685,6 @@ public class PracticasTienda {
         pedidos.add(new Pedido("36347775R-002/2025", clientes.get("36347775R"), hoy.minusDays(5), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
         pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
     }
-//</editor-fold>
+    //</editor-fold>
 
 } //Llave final
