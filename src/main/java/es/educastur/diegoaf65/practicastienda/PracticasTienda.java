@@ -351,7 +351,7 @@ public class PracticasTienda {
         return nuevoId;
     }
     
-    private void chequeadorStock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
+    public void chequeadorStock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
         if (a.getExistencias() == 0) {
             throw new StockCero("\n0 unidades disponibles de: "
                     + a.getDescripcion());

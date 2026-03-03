@@ -84,12 +84,22 @@ public class PracticasTiendaTest {
     }
     
     @Test
-    public void testTotalCliente() {
+    public void testTotalPorCliente() {
         assertAll(
             () -> assertEquals(3565, p.totalCliente2(p.getClientes().get("80580845T"))),
             () -> assertEquals(2370, p.totalCliente2(p.getClientes().get("36347775R"))),
             () -> assertEquals(2160, p.totalCliente2(p.getClientes().get("36347775R"))),
             () -> assertEquals(0, p.totalCliente2(p.getClientes().get("02337565Y")))
+        );
+    }
+    
+    @Test
+    public void testChequeadorStock() {
+        assertAll(
+            () -> assertThrows(StockCero.class, () -> {p.chequeadorStock(p.getArticulos().get("1-11"), 5);}),
+            () -> assertThrows(StockCero.class, () -> {p.chequeadorStock(p.getArticulos().get("2-33"), 1);}),
+            () -> assertThrows(StockInsuficiente.class, () -> {p.chequeadorStock(p.getArticulos().get("3-11"), 5);}),
+            () -> assertThrows(StockInsuficiente.class, () -> {p.chequeadorStock(p.getArticulos().get("3-11"), 10);})
         );
     }
 }
