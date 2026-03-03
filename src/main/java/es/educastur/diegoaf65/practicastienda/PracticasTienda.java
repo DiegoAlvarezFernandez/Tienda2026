@@ -70,7 +70,7 @@ public class PracticasTienda {
     //<editor-fold defaultstate="collapsed" desc="MAIN">
     public static void main(String[] args) {
         PracticasTienda p = new PracticasTienda();
-        //p.cargaDatos();
+        p.cargaDatos();
         p.menuOpciones();
     }
     //</editor-fold>
@@ -186,7 +186,7 @@ public class PracticasTienda {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CLIENTES">
-    public static void menuClientes() {
+    public void menuClientes() {
         int opcion;
         do {
             System.out.println("\t MENU DE OPCIONES");
@@ -230,7 +230,7 @@ public class PracticasTienda {
 
     }
 
-    public static void listadoClientes() {
+    public void listadoClientes() {
 
     }
     //</editor-fold>
@@ -536,7 +536,9 @@ public class PracticasTienda {
             System.out.println("\t --> 4 - ESCRIBIR ARCHIVO");
             System.out.println("\t --> 5 - LEER ARCHIVO");
             System.out.println("\t --> 6 - GUARDAR CLIENTES");
-            System.out.println("\t --> 7 - SALIR");
+            System.out.println("\t --> 7 - LEER CLIENTES");
+            System.out.println("\t --> 8 - GUARDAR CLIENTES");
+            System.out.println("\t --> 9 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -565,8 +567,16 @@ public class PracticasTienda {
                     guardarClientes();
                     break;
                 }
+                case 7: {
+                    leerClientes();
+                    break;
+                }
+                case 8: {
+                    guardarArticulos();
+                    break;
+                }
             }
-        } while (opcion != 7);
+        } while (opcion != 9);
     }
     
     public static void infoArchivo(){
@@ -646,15 +656,81 @@ public class PracticasTienda {
         }
     }
     
-    private void guardarClientes(){
-        Scanner sc = new Scanner(System.in);
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv", true))) {
+    public void guardarClientes(){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) { //Guarda todos los clientes en un archivo txt
             for (Cliente c : clientes.values()){
-                bw.write(c.getIdCliente() + " - " + c.getNombre() + " - " + c.getTelefono() + " - " + c.getEmail());
+                bw.write(c.toString());
                 bw.newLine();
+                System.out.println("Se han podido escribir los clientes en el archivo .txt");
             }
         }
         catch (IOException e) {
+            System.out.println("No se han podido escribir los clientes en el archivo");
+        }
+        
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv"))) { //Guarda todos los clientes en un archivo csv
+            for (Cliente c : clientes.values()){
+                bw.write(c.getIdCliente() + " - " + c.getNombre() + " - " + c.getTelefono() + " - " + c.getEmail());
+                bw.newLine();
+                System.out.println("Se han podido escribir los clientes en el archivo .csv");
+            }
+        }
+        catch (IOException e) {
+            System.out.println("No se han podido escribir los clientes en el archivo");
+        }
+    }
+    
+    public void leerClientes(){
+        try(Scanner scClientes = new Scanner(new File("clientes.csv"))){ //Lee todos los clientes del archivo clientes.csv
+            while (scClientes.hasNextLine()){
+                String [] atributos = scClientes.nextLine().split("[,]");
+                Cliente c = new Cliente(atributos[0], atributos[1], atributos[2], atributos[3]);
+                System.out.println(c);
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        
+        HashMap <String, Cliente> clientesAux = new HashMap();
+        try(Scanner scClientes = new Scanner(new File("clientes.csv"))){ //Lee todos los clientes del archivo clientes.csv y los guarda en el HashMap clientesAux
+            while (scClientes.hasNextLine()){
+                String [] atributos = scClientes.nextLine().split("[,]");
+                Cliente c = new Cliente(atributos[0], atributos[1], atributos[2], atributos[3]);
+                clientesAux.put(atributos[0], c);
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        clientesAux.values().forEach(System.out::println);
+    }
+    
+    public void guardarArticulos() {
+        try {
+            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("archivos/articulos/1-perifericos.csv", true));
+            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("archivos/articulos/2-almacenamiento.csv", true));
+            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("archivos/articulos/3-impresoras.csv", true));
+            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("archivos/articulos/4-monitores.csv", true));
+            {
+                for (Articulo a : articulos.values()) {
+                    switch (a.getidArticulo().charAt(0)) {
+                        case '1':
+                            bwPerifericos.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '2':
+                            bwAlmacenamiento.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '3':
+                            bwImpresoras.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '4':
+                            bwMonitores.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                    }
+                }
+            }
+        } catch (IOException e) {
             System.out.println("No se han podido escribir los clientes en el archivo");
         }
     }
