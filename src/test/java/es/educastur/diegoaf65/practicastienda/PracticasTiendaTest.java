@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PracticasTiendaTest {
     
-    PracticasTienda p = new PracticasTienda();
-    
     public PracticasTiendaTest() {
     }
     
@@ -38,6 +36,8 @@ public class PracticasTiendaTest {
     @AfterEach
     public void tearDown() {
     }
+    
+    PracticasTienda p = new PracticasTienda();
 
     /**
      * Test of main method, of class PracticasTienda.
@@ -46,10 +46,11 @@ public class PracticasTiendaTest {
     @Test
     public void testTotalPedidos() {
         assertAll(
-            () -> assertEquals(1000, p.totalPedidos(p.getPedidos().get(0))),
-            () -> assertEquals(1500, p.totalPedidos(p.getPedidos().get(1))),
-            () -> assertEquals(2000, p.totalPedidos(p.getPedidos().get(2))),
-            () -> assertEquals(2500, p.totalPedidos(p.getPedidos().get(3)))
+            () -> assertEquals(585, p.totalPedidos(p.getPedidos().get(0))),
+            () -> assertEquals(2980, p.totalPedidos(p.getPedidos().get(1))),
+            () -> assertEquals(390, p.totalPedidos(p.getPedidos().get(2))),
+            () -> assertEquals(1980, p.totalPedidos(p.getPedidos().get(3))),
+            () -> assertEquals(2160, p.totalPedidos(p.getPedidos().get(4)))
         );
     }
     
@@ -67,7 +68,7 @@ public class PracticasTiendaTest {
         assertAll(
             () -> assertEquals("80580845T-003/2026", p.generaIdPedido("80580845T")),
             () -> assertEquals("36347775R-003/2026", p.generaIdPedido("36347775R")),
-            () -> assertEquals("63921307Y-002/2026", p.generaIdPedido("36347775R")),
+            () -> assertEquals("63921307Y-002/2026", p.generaIdPedido("63921307Y")),
             () -> assertEquals("02337565Y-001/2026", p.generaIdPedido("02337565Y"))
         );
     }
@@ -84,11 +85,11 @@ public class PracticasTiendaTest {
     }
     
     @Test
-    public void testTotalPorCliente() {
+    public void testTotalCliente2() {
         assertAll(
             () -> assertEquals(3565, p.totalCliente2(p.getClientes().get("80580845T"))),
             () -> assertEquals(2370, p.totalCliente2(p.getClientes().get("36347775R"))),
-            () -> assertEquals(2160, p.totalCliente2(p.getClientes().get("36347775R"))),
+            () -> assertEquals(2160, p.totalCliente2(p.getClientes().get("63921307Y"))),
             () -> assertEquals(0, p.totalCliente2(p.getClientes().get("02337565Y")))
         );
     }
