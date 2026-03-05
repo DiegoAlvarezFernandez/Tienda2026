@@ -4,6 +4,8 @@
  */
 package es.educastur.diegoaf65.practicastienda;
 
+import java.io.Serializable;
+
 /**
  *
  * @author 1dawd21
@@ -13,7 +15,7 @@ package es.educastur.diegoaf65.practicastienda;
 Este es un comentario de Documentación JavaDoc
 */
 
-public class Articulo {
+public class Articulo implements Serializable{
     private String idArticulo;
     private String descripcion;
     private int existencias;

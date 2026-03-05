@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.TreeMap;
+import java.io.Serializable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
@@ -20,6 +21,12 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  *
@@ -27,9 +34,9 @@ import java.io.FileWriter;
  */
 
     //<editor-fold defaultstate="collapsed" desc="CLASES">
-public class PracticasTienda {
+public class PracticasTienda implements Serializable{
 
-    private static Scanner sc = new Scanner(System.in);
+    private static final transient Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
     private HashMap<String, Articulo> articulos;
     private HashMap<String, Cliente> clientes;
@@ -70,8 +77,13 @@ public class PracticasTienda {
     //<editor-fold defaultstate="collapsed" desc="MAIN">
     public static void main(String[] args) {
         PracticasTienda p = new PracticasTienda();
-        p.cargaDatos();
+        //p.cargaDatos();
         p.menuOpciones();
+        p.backupTiendaCompleta(p);
+        PracticasTienda pImportada = p.importarTiendaCompleta();
+        if (pImportada != null){
+            p = pImportada;
+        }
     }
     //</editor-fold>
 
@@ -107,7 +119,7 @@ public class PracticasTienda {
                     break;
                 }
                 case 5: {
-                    menuArchivos();
+                    menuArchivosTexto();
                     break;
                 }
             }
@@ -526,7 +538,7 @@ public class PracticasTienda {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="ARCHIVOS">
-    public void menuArchivos() {
+    public void menuArchivosTexto() {
         int opcion;
         do {
             System.out.println("\t MENU DE OPCIONES");
@@ -537,8 +549,9 @@ public class PracticasTienda {
             System.out.println("\t --> 5 - LEER ARCHIVO");
             System.out.println("\t --> 6 - GUARDAR CLIENTES");
             System.out.println("\t --> 7 - LEER CLIENTES");
-            System.out.println("\t --> 8 - GUARDAR CLIENTES");
-            System.out.println("\t --> 9 - SALIR");
+            System.out.println("\t --> 8 - GUARDAR ARCHIVOS POR SECCION");
+            System.out.println("\t --> 9 - LEER ARCHIVOS POR SECCION");
+            System.out.println("\t --> 10 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -572,11 +585,15 @@ public class PracticasTienda {
                     break;
                 }
                 case 8: {
-                    guardarArticulos();
+                    guardarArticulosPorSeccion();
+                    break;
+                }
+                case 9: {
+                    leerArticulosPorSeccion();
                     break;
                 }
             }
-        } while (opcion != 9);
+        } while (opcion != 10);
     }
     
     public static void infoArchivo(){
@@ -706,33 +723,119 @@ public class PracticasTienda {
         clientesAux.values().forEach(System.out::println);
     }
     
-    public void guardarArticulos() {
-        try {
-            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("archivos/articulos/1-perifericos.csv", true));
-            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("archivos/articulos/2-almacenamiento.csv", true));
-            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("archivos/articulos/3-impresoras.csv", true));
-            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("archivos/articulos/4-monitores.csv", true));
-            {
+    public void guardarArticulosPorSeccion(){
+        try (
+            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("perifericos.csv"));
+            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("almacenamiento.csv"));
+            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("impresoras.csv"));
+            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("monitores.csv"))){
+            
                 for (Articulo a : articulos.values()) {
                     switch (a.getidArticulo().charAt(0)) {
                         case '1':
                             bwPerifericos.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            bwPerifericos.newLine();
                             break;
                         case '2':
                             bwAlmacenamiento.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            bwPerifericos.newLine();
                             break;
                         case '3':
                             bwImpresoras.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            bwPerifericos.newLine();
                             break;
                         case '4':
                             bwMonitores.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            bwPerifericos.newLine();
                             break;
                     }
                 }
-            }
-        } catch (IOException e) {
-            System.out.println("No se han podido escribir los clientes en el archivo");
+            System.out.println("Se han podido escribir los articulos en los archivos .csv");
         }
+        catch (IOException e) {
+            System.out.println("No se han podido escribir los articulos en los archivos");
+        }
+    }
+    
+    public void leerArticulosPorSeccion(){
+        HashMap <String, Articulo> articulosAux = new HashMap();
+        String[] atributos;
+        String lineaArchivo;
+        try (
+            Scanner scPerifericos = new Scanner(new File("perifericos.csv"));
+            Scanner scAlmacenamiento = new Scanner(new File("almacenamiento.csv"));
+            Scanner scImpresoras = new Scanner(new File("impresoras.csv"));
+            Scanner scMonitores = new Scanner(new File("monitores.csv"))){
+            
+            while (scPerifericos.hasNextLine()){
+               lineaArchivo = scPerifericos.nextLine();
+               atributos = lineaArchivo.split("[,]");
+               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+               System.out.println(lineaArchivo); 
+            }
+            while (scAlmacenamiento.hasNextLine()){
+               lineaArchivo = scAlmacenamiento.nextLine();
+               atributos = lineaArchivo.split("[,]");
+               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+               System.out.println(lineaArchivo); 
+            }
+            while (scImpresoras.hasNextLine()){
+               lineaArchivo = scImpresoras.nextLine();
+               atributos = lineaArchivo.split("[,]");
+               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+               System.out.println(lineaArchivo); 
+            }
+            while (scMonitores.hasNextLine()){
+               lineaArchivo = scMonitores.nextLine();
+               atributos = lineaArchivo.split("[,]");
+               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+               System.out.println(lineaArchivo); 
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        System.out.println("");
+        for (Articulo a : articulosAux.values()){
+            System.out.println(a);
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="BACKUP TIENDA">
+    public void backupTiendaCompleta(PracticasTienda t){
+        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("Tienda.dat")))
+        {
+            oosTienda.writeObject(t);
+            System.out.println("Fino señores");
+        }
+        catch (FileNotFoundException ex){
+            System.out.println(ex.toString());
+        }
+        catch (IOException ex){
+            System.out.println(ex.toString());
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="IMPORTAR TIENDA">
+    public PracticasTienda importarTiendaCompleta(){
+        PracticasTienda p = null;
+        try (ObjectInputStream oisPracticasTienda = new ObjectInputStream(new FileInputStream("PracticasTienda.dat")))
+        {
+            p = (PracticasTienda) oisPracticasTienda.readObject();
+            System.out.println("Fino señores");
+        }
+        catch (FileNotFoundException ex){
+            System.out.println(ex.toString());
+        }
+        catch (IOException ex){
+            System.out.println(ex.toString());
+        }
+        catch (ClassNotFoundException ex){
+            Logger.getLogger(PracticasTienda.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return p;
     }
     //</editor-fold>
     

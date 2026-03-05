@@ -4,6 +4,8 @@
  */
 package es.educastur.diegoaf65.practicastienda;
 
+import java.io.Serializable;
+
 /**
  *
  * @author 1dawd21
@@ -16,7 +18,7 @@ Este es un comentario de Documentación JavaDoc
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Pedido {
+public class Pedido implements Serializable{
     private String idPedido;
     private Cliente clientePedido;
     private LocalDate fechaPedido;
