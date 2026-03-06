@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.EOFException;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -836,6 +837,73 @@ public class PracticasTienda implements Serializable{
             Logger.getLogger(PracticasTienda.class.getName()).log(Level.SEVERE, null, ex);
         }
         return p;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="BACKUP COLECCIONES">
+    public void backupColecciones(){
+        try (ObjectOutputStream oosArticulos = new ObjectOutputStream(new FileOutputStream("articulos.dat"));
+            ObjectOutputStream oosClientes = new ObjectOutputStream(new FileOutputStream("clientes.dat"));
+            ObjectOutputStream oosPedidos = new ObjectOutputStream(new FileOutputStream("pedidos.dat")))
+        {
+            
+            for (Articulo a : articulos.values()){
+                oosArticulos.writeObject(a);
+            }
+            for (Cliente c : clientes.values()){
+                oosClientes.writeObject(c);
+            }
+            for (Pedido p : pedidos){
+                oosPedidos.writeObject(p);
+            }
+            System.out.println("Copia de seguridad realizada con exito");
+        }
+        catch (IOException ex){
+            System.out.println("No se han podido crear los archivos correctamente");
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="IMPORTAR COLECCIONES">
+    public void importarColecciones(){
+        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream("D:/articulos.dat"))){
+            Articulo a;
+            while ( (a=(Articulo)oisArticulos.readObject()) != null){
+                 articulos.put(a.getidArticulo(), a);
+            } 
+        } catch (FileNotFoundException e) {
+                 System.out.println(e.toString());    
+        } catch (EOFException e){
+                System.out.println("Finalizada la lectura del archivo articulos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+                System.out.println(e.toString()); 
+        } 
+     
+        try (ObjectInputStream oisClientes = new ObjectInputStream(new FileInputStream("D:/clientes.dat"))){
+            Cliente c;
+            while ( (c=(Cliente)oisClientes.readObject()) != null){
+                 clientes.put(c.getIdCliente(), c);
+            } 
+	} catch (FileNotFoundException e) {
+                 System.out.println(e.toString());    
+        } catch (EOFException e){
+                System.out.println("Finalizada la lectura del archivo clientes.dat");
+        } catch (ClassNotFoundException | IOException e) {
+                System.out.println(e.toString()); 
+        }
+        
+        try (ObjectInputStream oisPedidos = new ObjectInputStream(new FileInputStream("D:/pedidos.dat"))){
+            Pedido p;
+            while ( (p=(Pedido)oisPedidos.readObject()) != null){
+                 pedidos.add(p);
+            } 
+	} catch (FileNotFoundException e) {
+                 System.out.println(e.toString());    
+        } catch (EOFException e){
+                 System.out.println("Finalizada la lectura del archivo pedidos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+                System.out.println(e.toString()); 
+        }
     }
     //</editor-fold>
     
