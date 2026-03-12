@@ -78,13 +78,15 @@ public class PracticasTienda implements Serializable{
     //<editor-fold defaultstate="collapsed" desc="MAIN">
     public static void main(String[] args) {
         PracticasTienda p = new PracticasTienda();
-        //p.cargaDatos();
+        p.cargaDatos();
         p.menuOpciones();
-        p.backupTiendaCompleta(p);
-        PracticasTienda pImportada = p.importarTiendaCompleta();
+        PracticasTienda pImportada = p.importarTienda(); // = p.importarTienda();
         if (pImportada != null){
             p = pImportada;
         }
+        //p.exportarTienda(p);
+        //p.importarColecciones();
+        //p.exportarColecciones();
     }
     //</editor-fold>
 
@@ -550,9 +552,10 @@ public class PracticasTienda implements Serializable{
             System.out.println("\t --> 5 - LEER ARCHIVO");
             System.out.println("\t --> 6 - GUARDAR CLIENTES");
             System.out.println("\t --> 7 - LEER CLIENTES");
-            System.out.println("\t --> 8 - GUARDAR ARCHIVOS POR SECCION");
-            System.out.println("\t --> 9 - LEER ARCHIVOS POR SECCION");
-            System.out.println("\t --> 10 - SALIR");
+            System.out.println("\t --> 8 - GUARDAR ARTICULOS POR SECCION 1");
+            System.out.println("\t --> 9 - GUARDAR ARCHIVOS POR SECCION 2");
+            System.out.println("\t --> 10 - LEER ARCHIVOS POR SECCION");
+            System.out.println("\t --> 11 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -586,15 +589,18 @@ public class PracticasTienda implements Serializable{
                     break;
                 }
                 case 8: {
-                    guardarArticulosPorSeccion();
+                    guardarArticulosPorSeccion1();
                     break;
                 }
                 case 9: {
-                    leerArticulosPorSeccion();
+                    guardarArticulosPorSeccion2();
                     break;
                 }
+                case 10: {
+                    leerArticulosPorSeccion();
+                }
             }
-        } while (opcion != 10);
+        } while (opcion != 11);
     }
     
     public static void infoArchivo(){
@@ -724,12 +730,12 @@ public class PracticasTienda implements Serializable{
         clientesAux.values().forEach(System.out::println);
     }
     
-    public void guardarArticulosPorSeccion(){
+    public void guardarArticulosPorSeccion1(){ //Se guardan los artículos en archivos .csv utilizando el BufferedWriter
         try (
-            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("perifericos.csv"));
-            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("almacenamiento.csv"));
-            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("impresoras.csv"));
-            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("monitores.csv"))){
+            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("secciones/perifericos.csv"));
+            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("secciones/almacenamiento.csv"));
+            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("secciones/impresoras.csv"));
+            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("secciones/monitores.csv"))){
             
                 for (Articulo a : articulos.values()) {
                     switch (a.getidArticulo().charAt(0)) {
@@ -752,6 +758,36 @@ public class PracticasTienda implements Serializable{
                     }
                 }
             System.out.println("Se han podido escribir los articulos en los archivos .csv");
+        }
+        catch (IOException e) {
+            System.out.println("No se han podido escribir los articulos en los archivos");
+        }
+    }
+    
+    public void guardarArticulosPorSeccion2(){ //Se guardan los artículos en archivos .dat utilizando el ObjectOutputStream
+        try (
+            ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("secciones/perifericos.dat"));
+            ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("secciones/almacenamiento.dat"));
+            ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("secciones/impresoras.dat"));
+            ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("secciones/monitores.dat"))){
+            
+                for (Articulo a : articulos.values()) {
+                    switch (a.getidArticulo().charAt(0)) {
+                        case '1':
+                            oosPerifericos.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '2':
+                            oosAlmacenamiento.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '3':
+                            oosImpresoras.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                        case '4':
+                            oosMonitores.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                            break;
+                    }
+                }
+            System.out.println("Se han podido escribir los articulos en los archivos .dat");
         }
         catch (IOException e) {
             System.out.println("No se han podido escribir los articulos en los archivos");
@@ -803,29 +839,13 @@ public class PracticasTienda implements Serializable{
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="BACKUP TIENDA">
-    public void backupTiendaCompleta(PracticasTienda t){
-        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("Tienda.dat")))
-        {
-            oosTienda.writeObject(t);
-            System.out.println("Fino señores");
-        }
-        catch (FileNotFoundException ex){
-            System.out.println(ex.toString());
-        }
-        catch (IOException ex){
-            System.out.println(ex.toString());
-        }
-    }
-    //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="IMPORTAR TIENDA">
-    public PracticasTienda importarTiendaCompleta(){
+    public PracticasTienda importarTienda(){
         PracticasTienda p = null;
-        try (ObjectInputStream oisPracticasTienda = new ObjectInputStream(new FileInputStream("PracticasTienda.dat")))
+        try (ObjectInputStream oisPracticasTienda = new ObjectInputStream(new FileInputStream("archivos/tienda.dat")))
         {
             p = (PracticasTienda) oisPracticasTienda.readObject();
-            System.out.println("Fino señores");
+            System.out.println("Fino seniores");
         }
         catch (FileNotFoundException ex){
             System.out.println(ex.toString());
@@ -840,33 +860,25 @@ public class PracticasTienda implements Serializable{
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="BACKUP COLECCIONES">
-    public void backupColecciones(){
-        try (ObjectOutputStream oosArticulos = new ObjectOutputStream(new FileOutputStream("articulos.dat"));
-            ObjectOutputStream oosClientes = new ObjectOutputStream(new FileOutputStream("clientes.dat"));
-            ObjectOutputStream oosPedidos = new ObjectOutputStream(new FileOutputStream("pedidos.dat")))
+    //<editor-fold defaultstate="collapsed" desc="EXPORTAR TIENDA">
+    public void exportarTienda(PracticasTienda t){
+        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("archivos/tienda.dat")))
         {
-            
-            for (Articulo a : articulos.values()){
-                oosArticulos.writeObject(a);
-            }
-            for (Cliente c : clientes.values()){
-                oosClientes.writeObject(c);
-            }
-            for (Pedido p : pedidos){
-                oosPedidos.writeObject(p);
-            }
-            System.out.println("Copia de seguridad realizada con exito");
+            oosTienda.writeObject(t);
+            System.out.println("Fino seniores");
+        }
+        catch (FileNotFoundException ex){
+            System.out.println(ex.toString());
         }
         catch (IOException ex){
-            System.out.println("No se han podido crear los archivos correctamente");
+            System.out.println(ex.toString());
         }
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="IMPORTAR COLECCIONES">
     public void importarColecciones(){
-        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream("D:/articulos.dat"))){
+        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream("archivos/articulos.dat"))){
             Articulo a;
             while ( (a=(Articulo)oisArticulos.readObject()) != null){
                  articulos.put(a.getidArticulo(), a);
@@ -879,7 +891,7 @@ public class PracticasTienda implements Serializable{
                 System.out.println(e.toString()); 
         } 
      
-        try (ObjectInputStream oisClientes = new ObjectInputStream(new FileInputStream("D:/clientes.dat"))){
+        try (ObjectInputStream oisClientes = new ObjectInputStream(new FileInputStream("archivos/clientes.dat"))){
             Cliente c;
             while ( (c=(Cliente)oisClientes.readObject()) != null){
                  clientes.put(c.getIdCliente(), c);
@@ -892,7 +904,7 @@ public class PracticasTienda implements Serializable{
                 System.out.println(e.toString()); 
         }
         
-        try (ObjectInputStream oisPedidos = new ObjectInputStream(new FileInputStream("D:/pedidos.dat"))){
+        try (ObjectInputStream oisPedidos = new ObjectInputStream(new FileInputStream("archivos/pedidos.dat"))){
             Pedido p;
             while ( (p=(Pedido)oisPedidos.readObject()) != null){
                  pedidos.add(p);
@@ -903,6 +915,29 @@ public class PracticasTienda implements Serializable{
                  System.out.println("Finalizada la lectura del archivo pedidos.dat");
         } catch (ClassNotFoundException | IOException e) {
                 System.out.println(e.toString()); 
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="EXPORTAR COLECCIONES">
+    public void exportarColecciones(){
+        try (ObjectOutputStream oosArticulos = new ObjectOutputStream(new FileOutputStream("archivos/articulos.dat"));
+            ObjectOutputStream oosClientes = new ObjectOutputStream(new FileOutputStream("archivos/clientes.dat"));
+            ObjectOutputStream oosPedidos = new ObjectOutputStream(new FileOutputStream("archivos/pedidos.dat"))){
+            
+            for (Articulo a : articulos.values()) {
+                oosArticulos.writeObject(a);
+            }
+            for (Cliente c : clientes.values()) {
+                oosClientes.writeObject(c);
+            }
+            for (Pedido p : pedidos) {
+                oosPedidos.writeObject(p);
+            }
+            System.out.println("Copia de seguridad realizada con exito");
+        }
+        catch (IOException ex){
+            System.out.println("No se han podido crear los archivos correctamente");
         }
     }
     //</editor-fold>
