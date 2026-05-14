@@ -93,6 +93,7 @@ public class PracticasTienda implements Serializable{
         //p.exportarColecciones();
         p.jdbcLeerArticulos();
         p.jdbcLeerClientes();
+        p.jdbcLeerPedidos();
     }
     //</editor-fold>
 
@@ -1033,6 +1034,63 @@ public class PracticasTienda implements Serializable{
         }
         System.out.println("CLIENTES exportados a MySQL correctamente");
     }
+    
+    private void jdbcPedidos(){
+        String consulta = "SELECT * FROM pedidos";
+        try {
+            PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
+            ps.executeUpdate();
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+    
+    public void jdbcLeerPedidos() {
+        Statement sentenciaPedidos, sentenciaLp;
+        String consultaPedidos = "SELECT * FROM pedidos";
+        try {
+            sentenciaPedidos = Conexion.obtener().createStatement();
+            ResultSet rsPedidos = sentenciaPedidos.executeQuery(consultaPedidos);
+            while (rsPedidos.next()) {
+                ArrayList<LineaPedido> cestaCompra = new ArrayList();
+                String consultaLp = "SELECT * FROM lineaspedidos WHERE idPedido='" + rsPedidos.getString(1) + "'";
+                sentenciaLp = Conexion.obtener().createStatement();
+                ResultSet rsLp = sentenciaLp.executeQuery(consultaLp);
+                while (rsLp.next()) {
+                    cestaCompra.add(new LineaPedido(articulos.get(rsLp.getString(2)), rsLp.getInt(3)));
+                }
+                pedidos.add(new Pedido(rsPedidos.getString(1), clientes.get(rsPedidos.getString(2)),
+                         LocalDate.parse(rsPedidos.getString(3)), cestaCompra));
+            }
+            System.out.println("\nPEDIDOS importados desde MySQL correctamente");
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
+    
+    private void jdbcGuardarPedidos(){
+        for (Pedido p:pedidos){
+            String consulta1= "INSERT INTO `pedidos` (`idPedido`, `clientePedido`, `fechaPedido`)"
+                    + " VALUES ('" + p.getIdPedido()+"', '"+p.getClientePedido().getIdCliente()+"','"+p.getFechaPedido()+"')";
+            for (LineaPedido l:p.getCestaCompra()){
+                String consulta2= "INSERT INTO `lineaspedidos` (`idPedido`, `idArticulo`, `unidades`)"
+                    + " VALUES ('" + p.getIdPedido()+"', '"+l.getArticulo().getidArticulo()+"','"+l.getUnidades()+"')";
+                try {
+                    PreparedStatement ps = Conexion.obtener().prepareStatement(consulta2);
+                    ps.executeUpdate();
+                } catch (ClassNotFoundException | SQLException e) {
+                    System.out.println(e.toString());
+                }
+            }
+            try {
+                PreparedStatement ps = Conexion.obtener().prepareStatement(consulta1);
+                ps.executeUpdate();
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        System.out.println("PEDIDOS exportados a MySQL correctamente");
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
@@ -1062,5 +1120,5 @@ public class PracticasTienda implements Serializable{
         pedidos.add(new Pedido("63921307Y-001/2026", clientes.get("63921307Y"), LocalDate.parse("2026-03-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
     }
     //</editor-fold>
-
+    
 } //Llave final
