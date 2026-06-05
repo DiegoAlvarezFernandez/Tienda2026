@@ -37,9 +37,9 @@ import java.sql.Statement;
  *
  * @author 1dawd21
  */
+//<editor-fold defaultstate="collapsed" desc="CLASES">
 
-    //<editor-fold defaultstate="collapsed" desc="CLASES">
-public class PracticasTienda implements Serializable{
+public class PracticasTienda implements Serializable {
 
     private static final transient Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
@@ -91,9 +91,10 @@ public class PracticasTienda implements Serializable{
         //p.exportarTienda(p);
         //p.importarColecciones();
         //p.exportarColecciones();
-        p.jdbcLeerArticulos();
-        p.jdbcLeerClientes();
-        p.jdbcLeerPedidos();
+        //p.jdbcLeerArticulos();
+        //p.jdbcLeerClientes();
+        //p.jdbcLeerPedidos();
+        p.menuEjerciciosRepaso();
     }
     //</editor-fold>
 
@@ -318,12 +319,12 @@ public class PracticasTienda implements Serializable{
             double totalPedido = 0;
             double totalLinea = 0;
             for (LineaPedido l : cestaCompra) {
-                totalLinea = l.getUnidades()*l.getArticulo().getPvp();
+                totalLinea = l.getUnidades() * l.getArticulo().getPvp();
                 totalPedido += totalLinea;
                 System.out.println(l.getArticulo() + " - "
                         + l.getArticulo().getDescripcion() + " - "
                         + l.getUnidades() + " - "
-                        + l.getArticulo().getPvp() + " - " 
+                        + l.getArticulo().getPvp() + " - "
                         + totalLinea);
             }
             System.out.print("Total: " + totalPedido);
@@ -345,11 +346,11 @@ public class PracticasTienda implements Serializable{
             System.out.println(p + " - Total: " + totalPedidos(p));
         }
         System.out.println("\n");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
-                .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedidos(p)))
+                .forEach(p -> System.out.println(p + " - Total: " + totalPedidos(p)));
         System.out.println("\n");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos((Pedido)p)).reversed())
-                .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedidos((Pedido) p)).reversed())
+                .forEach(p -> System.out.println(p + " - Total: " + totalPedidos(p)));
     }
 
     public double totalPedidos(Pedido p) {
@@ -372,7 +373,7 @@ public class PracticasTienda implements Serializable{
         nuevoId = idCliente + "-" + String.format("%03d", contador) + "/" + LocalDate.now().getYear();
         return nuevoId;
     }
-    
+
     public void chequeadorStock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
         if (a.getExistencias() == 0) {
             throw new StockCero("\n0 unidades disponibles de: "
@@ -384,7 +385,7 @@ public class PracticasTienda implements Serializable{
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="STREAMS">
     public void menuStreams() {
         int opcion;
@@ -403,150 +404,149 @@ public class PracticasTienda implements Serializable{
             }
         } while (opcion != 2);
     }
-    
-    private void listadosStreams(){
+
+    private void listadosStreams() {
         System.out.println("Listado de todos los articulos que valen mas de 100€:");
-        articulos.values().stream().filter(a->a.getPvp()<100)
-                                   .sorted(Comparator.comparing(Articulo::getPvp))
-                                   .forEach(a->System.out.println(a));
-        
+        articulos.values().stream().filter(a -> a.getPvp() < 100)
+                .sorted(Comparator.comparing(Articulo::getPvp))
+                .forEach(a -> System.out.println(a));
+
         System.out.println("\n");
         System.out.println("Listado de todos los pedidos de menor a mayor:");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos(p)))
-                        .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
-        
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedidos(p)))
+                .forEach(p -> System.out.println(p + " - Total: " + totalPedidos(p)));
+
         System.out.println("\n");
         System.out.println("Listado de todos los pedidos de mayor a menor:");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedidos((Pedido)p)).reversed())
-                        .forEach(p->System.out.println(p + " - Total: " + totalPedidos(p)));
-        
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedidos((Pedido) p)).reversed())
+                .forEach(p -> System.out.println(p + " - Total: " + totalPedidos(p)));
+
         System.out.println("\n");
         System.out.println("Listado de todos los pedidos que valen mas de 1000€ de menor a mayor:");
-        pedidos.stream().filter(p->totalPedidos(p)<1000)
-                        .sorted(Comparator.comparing(Pedido::getFechaPedido))
-                        .forEach(p->System.out.println(p + " - Total: " + p.getFechaPedido()));
-        
+        pedidos.stream().filter(p -> totalPedidos(p) < 1000)
+                .sorted(Comparator.comparing(Pedido::getFechaPedido))
+                .forEach(p -> System.out.println(p + " - Total: " + p.getFechaPedido()));
+
         System.out.println("Listado de todos los pedidos hechos por el cliente con DNI 80580845T:");
-        long numPedidos = pedidos.stream().filter(p->p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
-                                          .count();
+        long numPedidos = pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
+                .count();
         System.out.println(numPedidos);
-        
+
         System.out.println("Listado de todos los pedidos hechos por cada cliente:");
-        Map<Cliente, Long> numPedidosPorCliente =
-        pedidos.stream().collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
-        
+        Map<Cliente, Long> numPedidosPorCliente
+                = pedidos.stream().collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
+
         System.out.println("\n");
         System.out.println("Listado de todas las unidades que hay por cada pedido realizado:");
-        for (Articulo a: articulos.values()){
+        for (Articulo a : articulos.values()) {
             int total = 0;
-            for (Pedido p: pedidos){
-                total += p.getCestaCompra().stream().filter(l->l.getArticulo().equals(a))
-                                                    .mapToInt(LineaPedido::getUnidades).sum();
+            for (Pedido p : pedidos) {
+                total += p.getCestaCompra().stream().filter(l -> l.getArticulo().equals(a))
+                        .mapToInt(LineaPedido::getUnidades).sum();
             }
             System.out.println(a + " - " + total);
         }
-        
+
         System.out.println("Listado de todos los pedidos ordenados por fecha de menor a mayor y almacenados en una lista:");
-        List <Pedido> pedidosOrdenadosFecha = 
-                pedidos.stream().sorted(Comparator.comparing(Pedido::getFechaPedido))
-                                .collect(Collectors.toList());
-        
+        List<Pedido> pedidosOrdenadosFecha
+                = pedidos.stream().sorted(Comparator.comparing(Pedido::getFechaPedido))
+                        .collect(Collectors.toList());
+
         System.out.println("Listado de todos los pedidos ordenados por el total de menor a mayor y almacenados en una coleccion TreeMap:");
-        TreeMap <Double, Pedido> pedidosConTotales = new TreeMap();
-        for (Pedido p : pedidos){
+        TreeMap<Double, Pedido> pedidosConTotales = new TreeMap();
+        for (Pedido p : pedidos) {
             pedidosConTotales.put(totalPedidos(p), p);
         }
         System.out.println("\n");
-        for (Double total: pedidosConTotales.keySet()){
+        for (Double total : pedidosConTotales.keySet()) {
             System.out.println(pedidosConTotales.get(total).getIdPedido() + " - " + total);
         }
-        
+
         System.out.println("Listado de todos los pedidos ordenados por el total de mayor a menor y almacenados en una coleccion TreeMap:");
-        TreeMap <Double, Pedido> pedidosConTotales2 = new TreeMap();
-        for (Pedido p : pedidos){
+        TreeMap<Double, Pedido> pedidosConTotales2 = new TreeMap();
+        for (Pedido p : pedidos) {
             pedidosConTotales2.put(totalPedidos(p), p);
         }
         System.out.println("\n");
-        for (Double total: pedidosConTotales2.descendingKeySet()){
+        for (Double total : pedidosConTotales2.descendingKeySet()) {
             System.out.println(pedidosConTotales2.get(total).getIdPedido() + " - " + total);
         }
-        
+
         System.out.println("Listado de todos los clientes ordenados por las ventas realizadas de mayor a menor y almacenados en una coleccion TreeMap:");
-        TreeMap <Double, Cliente> ventasPorCliente = new TreeMap();
-        for (Cliente c: clientes.values()){
+        TreeMap<Double, Cliente> ventasPorCliente = new TreeMap();
+        for (Cliente c : clientes.values()) {
             ventasPorCliente.put(totalCliente2(c), c);
         }
         System.out.println("\n");
-        for (Double totalPorCliente: ventasPorCliente.descendingKeySet()){
+        for (Double totalPorCliente : ventasPorCliente.descendingKeySet()) {
             System.out.println(ventasPorCliente.get(totalPorCliente).getNombre() + " - " + totalPorCliente);
         }
-        
+
         System.out.println("Listado de todos los articulos ordenados por seccion y almacenados en una lista:");
-        List <Articulo> perifericos, almacenamiento, impresoras, monitores;
-        perifericos = articulos.values().stream().filter(a->a.getidArticulo().startsWith("1"))
-                                                 .collect(Collectors.toList());
-        almacenamiento = articulos.values().stream().filter(a->a.getidArticulo().startsWith("2"))
-                                                    .collect(Collectors.toList());
-        impresoras = articulos.values().stream().filter(a->a.getidArticulo().startsWith("3"))
-                                                .collect(Collectors.toList());
-        monitores = articulos.values().stream().filter(a->a.getidArticulo().startsWith("4"))
-                                               .collect(Collectors.toList());
-        
+        List<Articulo> perifericos, almacenamiento, impresoras, monitores;
+        perifericos = articulos.values().stream().filter(a -> a.getidArticulo().startsWith("1"))
+                .collect(Collectors.toList());
+        almacenamiento = articulos.values().stream().filter(a -> a.getidArticulo().startsWith("2"))
+                .collect(Collectors.toList());
+        impresoras = articulos.values().stream().filter(a -> a.getidArticulo().startsWith("3"))
+                .collect(Collectors.toList());
+        monitores = articulos.values().stream().filter(a -> a.getidArticulo().startsWith("4"))
+                .collect(Collectors.toList());
+
         System.out.println("Listado posterior al borrado de todos los articulos de la seccion de impresoras:");
-        articulos.values().removeIf(a->a.getidArticulo().startsWith("3"));
+        articulos.values().removeIf(a -> a.getidArticulo().startsWith("3"));
         System.out.println("\n");
-        articulos.values().stream().forEach(a->System.out.println(a));
-        
+        articulos.values().stream().forEach(a -> System.out.println(a));
+
         System.out.println("Listado posterior al borrado de todos los pedidos con 3 dias de antiguedad y almacenados en una lista:");
-        List <Pedido> pedidosAntiguos =
-        pedidos.stream().filter(p->p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
+        List<Pedido> pedidosAntiguos
+                = pedidos.stream().filter(p -> p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
                         .collect(Collectors.toList());
         pedidos.removeAll(pedidosAntiguos);
         System.out.println(pedidos);
     }
-    
-    public double totalCliente2(Cliente c){
-        return pedidos.stream().filter(p->p.getClientePedido().equals(c))
-                               .mapToDouble(p->totalPedidos(p)).sum();
+
+    public double totalCliente2(Cliente c) {
+        return pedidos.stream().filter(p -> p.getClientePedido().equals(c))
+                .mapToDouble(p -> totalPedidos(p)).sum();
     }
-    
-    public double totalPedido2(Pedido p){
-        return p.getCestaCompra().stream().mapToDouble(l->l.getArticulo().getPvp()
-                                          *l.getUnidades()).sum();
+
+    public double totalPedido2(Pedido p) {
+        return p.getCestaCompra().stream().mapToDouble(l -> l.getArticulo().getPvp()
+                * l.getUnidades()).sum();
     }
-    
+
     //Comparativa entre 3 diferentes maneras (básica, media y avanzada) de hacer el método "unidadesVendidas"
-    
-    private int unidadesVendidas1(Articulo a){ //Básica
+    private int unidadesVendidas1(Articulo a) { //Básica
         int total = 0;
-        for (Pedido p : pedidos){
-            for (LineaPedido lp : p.getCestaCompra()){
-                if (lp.getArticulo().equals(a)){
+        for (Pedido p : pedidos) {
+            for (LineaPedido lp : p.getCestaCompra()) {
+                if (lp.getArticulo().equals(a)) {
                     total += lp.getUnidades();
                 }
             }
         }
         return total;
     }
-    
-    private int unidadesVendidas2(Articulo a){ //Media
+
+    private int unidadesVendidas2(Articulo a) { //Media
         int total = 0;
-        for (Pedido p: pedidos){
-            total += p.getCestaCompra().stream().filter(l->l.getArticulo().equals(a))
-                                                .mapToInt(LineaPedido::getUnidades)
-                                                .sum();
+        for (Pedido p : pedidos) {
+            total += p.getCestaCompra().stream().filter(l -> l.getArticulo().equals(a))
+                    .mapToInt(LineaPedido::getUnidades)
+                    .sum();
         }
         return total;
     }
-    
-    private int unidadesVendidas3(Articulo a){ //Avanzada
-        return pedidos.stream().flatMap(p->p.getCestaCompra().stream())
-                               .filter(l->l.getArticulo().equals(a))
-                               .mapToInt(LineaPedido::getUnidades)
-                               .sum();
+
+    private int unidadesVendidas3(Articulo a) { //Avanzada
+        return pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
+                .filter(l -> l.getArticulo().equals(a))
+                .mapToInt(LineaPedido::getUnidades)
+                .sum();
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="ARCHIVOS">
     public void menuArchivosTexto() {
         int opcion;
@@ -609,13 +609,12 @@ public class PracticasTienda implements Serializable{
             }
         } while (opcion != 11);
     }
-    
-    public static void infoArchivo(){
+
+    public static void infoArchivo() {
         File f = new File("archivo1.txt");
         try {
             f.createNewFile();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         System.out.println("Nombre: " + f.getName());
@@ -624,7 +623,7 @@ public class PracticasTienda implements Serializable{
         System.out.println("Fecha ultima modificacion: " + new Date(f.lastModified()));
     }
 
-    public static void borrarArchivo(){
+    public static void borrarArchivo() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Archivo a eliminar: ");
         String nombre = sc.nextLine();
@@ -632,13 +631,12 @@ public class PracticasTienda implements Serializable{
         System.out.println(f.getAbsolutePath());
         if (f.delete()) {
             System.out.println("Archivo eliminado");
-        }
-        else {
+        } else {
             System.out.println("No se ha podido eliminar");
         }
     }
 
-    public static void cambiarNombreArchivo(){
+    public static void cambiarNombreArchivo() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Nombre del Archivo a renombrar: ");
         String nombre = sc.nextLine();
@@ -648,13 +646,12 @@ public class PracticasTienda implements Serializable{
         File f2 = new File(nombre2);
         if (f1.renameTo(f2)) {
             System.out.println("Se ha cambiado el nombre");
-        }
-        else {
+        } else {
             System.out.println("No se ha podido cambiar el nombre");
         }
     }
 
-    public static void escribirArchivo(){
+    public static void escribirArchivo() {
         Scanner sc = new Scanner(System.in);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("archivo1.txt", true))) {
             String cadena;
@@ -665,273 +662,245 @@ public class PracticasTienda implements Serializable{
                 bw.newLine(); //Añade un salto de línea
                 cadena = sc.nextLine(); //Solicita una nueva cadena
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("No se ha podido escribir en el fichero");
         }
     }
-    
-    public static void leerArchivo(){
+
+    public static void leerArchivo() {
         try (BufferedReader br = new BufferedReader(new FileReader("archivo1.txt"))) {
-        String cadena = br.readLine(); //Lee la primera línea del fichero
+            String cadena = br.readLine(); //Lee la primera línea del fichero
             while (cadena != null) { //Mientras no se llegue al final del archivo
                 System.out.println(cadena); //Se nuestra por pantalla
                 cadena = br.readLine(); //Se lee la siguiente línea del archivo
             }
-        }
-        catch (FileNotFoundException e) {
-        System.out.println(e.getMessage());
-        }
-        catch (IOException e) {
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    public void guardarClientes(){
+
+    public void guardarClientes() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) { //Guarda todos los clientes en un archivo txt
-            for (Cliente c : clientes.values()){
+            for (Cliente c : clientes.values()) {
                 bw.write(c.toString());
                 bw.newLine();
                 System.out.println("Se han podido escribir los clientes en el archivo .txt");
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("No se han podido escribir los clientes en el archivo");
         }
-        
+
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv"))) { //Guarda todos los clientes en un archivo csv
-            for (Cliente c : clientes.values()){
+            for (Cliente c : clientes.values()) {
                 bw.write(c.getIdCliente() + " - " + c.getNombre() + " - " + c.getTelefono() + " - " + c.getEmail());
                 bw.newLine();
                 System.out.println("Se han podido escribir los clientes en el archivo .csv");
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("No se han podido escribir los clientes en el archivo");
         }
     }
-    
-    public void leerClientes(){
-        try(Scanner scClientes = new Scanner(new File("clientes.csv"))){ //Lee todos los clientes del archivo clientes.csv
-            while (scClientes.hasNextLine()){
-                String [] atributos = scClientes.nextLine().split("[,]");
+
+    public void leerClientes() {
+        try (Scanner scClientes = new Scanner(new File("clientes.csv"))) { //Lee todos los clientes del archivo clientes.csv
+            while (scClientes.hasNextLine()) {
+                String[] atributos = scClientes.nextLine().split("[,]");
                 Cliente c = new Cliente(atributos[0], atributos[1], atributos[2], atributos[3]);
                 System.out.println(c);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.toString());
         }
-        
-        HashMap <String, Cliente> clientesAux = new HashMap();
-        try(Scanner scClientes = new Scanner(new File("clientes.csv"))){ //Lee todos los clientes del archivo clientes.csv y los guarda en el HashMap clientesAux
-            while (scClientes.hasNextLine()){
-                String [] atributos = scClientes.nextLine().split("[,]");
+
+        HashMap<String, Cliente> clientesAux = new HashMap();
+        try (Scanner scClientes = new Scanner(new File("clientes.csv"))) { //Lee todos los clientes del archivo clientes.csv y los guarda en el HashMap clientesAux
+            while (scClientes.hasNextLine()) {
+                String[] atributos = scClientes.nextLine().split("[,]");
                 Cliente c = new Cliente(atributos[0], atributos[1], atributos[2], atributos[3]);
                 clientesAux.put(atributos[0], c);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.toString());
         }
         clientesAux.values().forEach(System.out::println);
     }
-    
-    public void guardarArticulosPorSeccion1(){ //Se guardan los artículos en archivos .csv utilizando el BufferedWriter
+
+    public void guardarArticulosPorSeccion1() { //Se guardan los artículos en archivos .csv utilizando el BufferedWriter
         try (
-            BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("secciones/perifericos.csv"));
-            BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("secciones/almacenamiento.csv"));
-            BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("secciones/impresoras.csv"));
-            BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("secciones/monitores.csv"))){
-            
-                for (Articulo a : articulos.values()) {
-                    switch (a.getidArticulo().charAt(0)) {
-                        case '1':
-                            bwPerifericos.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            bwPerifericos.newLine();
-                            break;
-                        case '2':
-                            bwAlmacenamiento.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            bwPerifericos.newLine();
-                            break;
-                        case '3':
-                            bwImpresoras.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            bwPerifericos.newLine();
-                            break;
-                        case '4':
-                            bwMonitores.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            bwPerifericos.newLine();
-                            break;
-                    }
+                BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("secciones/perifericos.csv")); BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("secciones/almacenamiento.csv")); BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("secciones/impresoras.csv")); BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("secciones/monitores.csv"))) {
+
+            for (Articulo a : articulos.values()) {
+                switch (a.getidArticulo().charAt(0)) {
+                    case '1':
+                        bwPerifericos.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        bwPerifericos.newLine();
+                        break;
+                    case '2':
+                        bwAlmacenamiento.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        bwPerifericos.newLine();
+                        break;
+                    case '3':
+                        bwImpresoras.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        bwPerifericos.newLine();
+                        break;
+                    case '4':
+                        bwMonitores.write(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        bwPerifericos.newLine();
+                        break;
                 }
+            }
             System.out.println("Se han podido escribir los articulos en los archivos .csv");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("No se han podido escribir los articulos en los archivos");
         }
     }
-    
-    public void guardarArticulosPorSeccion2(){ //Se guardan los artículos en archivos .dat utilizando el ObjectOutputStream
+
+    public void guardarArticulosPorSeccion2() { //Se guardan los artículos en archivos .dat utilizando el ObjectOutputStream
         try (
-            ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("secciones/perifericos.dat"));
-            ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("secciones/almacenamiento.dat"));
-            ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("secciones/impresoras.dat"));
-            ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("secciones/monitores.dat"))){
-            
-                for (Articulo a : articulos.values()) {
-                    switch (a.getidArticulo().charAt(0)) {
-                        case '1':
-                            oosPerifericos.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            break;
-                        case '2':
-                            oosAlmacenamiento.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            break;
-                        case '3':
-                            oosImpresoras.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            break;
-                        case '4':
-                            oosMonitores.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
-                            break;
-                    }
+                ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("secciones/perifericos.dat")); ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("secciones/almacenamiento.dat")); ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("secciones/impresoras.dat")); ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("secciones/monitores.dat"))) {
+
+            for (Articulo a : articulos.values()) {
+                switch (a.getidArticulo().charAt(0)) {
+                    case '1':
+                        oosPerifericos.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        break;
+                    case '2':
+                        oosAlmacenamiento.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        break;
+                    case '3':
+                        oosImpresoras.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        break;
+                    case '4':
+                        oosMonitores.writeObject(a.getidArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp());
+                        break;
                 }
+            }
             System.out.println("Se han podido escribir los articulos en los archivos .dat");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("No se han podido escribir los articulos en los archivos");
         }
     }
-    
-    public void leerArticulosPorSeccion(){
-        HashMap <String, Articulo> articulosAux = new HashMap();
+
+    public void leerArticulosPorSeccion() {
+        HashMap<String, Articulo> articulosAux = new HashMap();
         String[] atributos;
         String lineaArchivo;
         try (
-            Scanner scPerifericos = new Scanner(new File("perifericos.csv"));
-            Scanner scAlmacenamiento = new Scanner(new File("almacenamiento.csv"));
-            Scanner scImpresoras = new Scanner(new File("impresoras.csv"));
-            Scanner scMonitores = new Scanner(new File("monitores.csv"))){
-            
-            while (scPerifericos.hasNextLine()){
-               lineaArchivo = scPerifericos.nextLine();
-               atributos = lineaArchivo.split("[,]");
-               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
-               System.out.println(lineaArchivo); 
+                Scanner scPerifericos = new Scanner(new File("perifericos.csv")); Scanner scAlmacenamiento = new Scanner(new File("almacenamiento.csv")); Scanner scImpresoras = new Scanner(new File("impresoras.csv")); Scanner scMonitores = new Scanner(new File("monitores.csv"))) {
+
+            while (scPerifericos.hasNextLine()) {
+                lineaArchivo = scPerifericos.nextLine();
+                atributos = lineaArchivo.split("[,]");
+                articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+                System.out.println(lineaArchivo);
             }
-            while (scAlmacenamiento.hasNextLine()){
-               lineaArchivo = scAlmacenamiento.nextLine();
-               atributos = lineaArchivo.split("[,]");
-               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
-               System.out.println(lineaArchivo); 
+            while (scAlmacenamiento.hasNextLine()) {
+                lineaArchivo = scAlmacenamiento.nextLine();
+                atributos = lineaArchivo.split("[,]");
+                articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+                System.out.println(lineaArchivo);
             }
-            while (scImpresoras.hasNextLine()){
-               lineaArchivo = scImpresoras.nextLine();
-               atributos = lineaArchivo.split("[,]");
-               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
-               System.out.println(lineaArchivo); 
+            while (scImpresoras.hasNextLine()) {
+                lineaArchivo = scImpresoras.nextLine();
+                atributos = lineaArchivo.split("[,]");
+                articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+                System.out.println(lineaArchivo);
             }
-            while (scMonitores.hasNextLine()){
-               lineaArchivo = scMonitores.nextLine();
-               atributos = lineaArchivo.split("[,]");
-               articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
-               System.out.println(lineaArchivo); 
+            while (scMonitores.hasNextLine()) {
+                lineaArchivo = scMonitores.nextLine();
+                atributos = lineaArchivo.split("[,]");
+                articulosAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+                System.out.println(lineaArchivo);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.toString());
         }
         System.out.println("");
-        for (Articulo a : articulosAux.values()){
+        for (Articulo a : articulosAux.values()) {
             System.out.println(a);
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="IMPORTAR TIENDA">
-    public PracticasTienda importarTienda(){
+    public PracticasTienda importarTienda() {
         PracticasTienda p = null;
-        try (ObjectInputStream oisPracticasTienda = new ObjectInputStream(new FileInputStream("archivos/tienda.dat")))
-        {
+        try (ObjectInputStream oisPracticasTienda = new ObjectInputStream(new FileInputStream("archivos/tienda.dat"))) {
             p = (PracticasTienda) oisPracticasTienda.readObject();
             System.out.println("Fino seniores");
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             System.out.println(ex.toString());
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.toString());
-        }
-        catch (ClassNotFoundException ex){
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(PracticasTienda.class.getName()).log(Level.SEVERE, null, ex);
         }
         return p;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="EXPORTAR TIENDA">
-    public void exportarTienda(PracticasTienda t){
-        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("archivos/tienda.dat")))
-        {
+    public void exportarTienda(PracticasTienda t) {
+        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("archivos/tienda.dat"))) {
             oosTienda.writeObject(t);
             System.out.println("Fino seniores");
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             System.out.println(ex.toString());
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.toString());
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="IMPORTAR COLECCIONES">
-    public void importarColecciones(){
-        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream("archivos/articulos.dat"))){
+    public void importarColecciones() {
+        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream("archivos/articulos.dat"))) {
             Articulo a;
-            while ( (a=(Articulo)oisArticulos.readObject()) != null){
-                 articulos.put(a.getidArticulo(), a);
-            } 
+            while ((a = (Articulo) oisArticulos.readObject()) != null) {
+                articulos.put(a.getidArticulo(), a);
+            }
         } catch (FileNotFoundException e) {
-                 System.out.println(e.toString());    
-        } catch (EOFException e){
-                System.out.println("Finalizada la lectura del archivo articulos.dat");
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo articulos.dat");
         } catch (ClassNotFoundException | IOException e) {
-                System.out.println(e.toString()); 
-        } 
-     
-        try (ObjectInputStream oisClientes = new ObjectInputStream(new FileInputStream("archivos/clientes.dat"))){
-            Cliente c;
-            while ( (c=(Cliente)oisClientes.readObject()) != null){
-                 clientes.put(c.getIdCliente(), c);
-            } 
-	} catch (FileNotFoundException e) {
-                 System.out.println(e.toString());    
-        } catch (EOFException e){
-                System.out.println("Finalizada la lectura del archivo clientes.dat");
-        } catch (ClassNotFoundException | IOException e) {
-                System.out.println(e.toString()); 
+            System.out.println(e.toString());
         }
-        
-        try (ObjectInputStream oisPedidos = new ObjectInputStream(new FileInputStream("archivos/pedidos.dat"))){
-            Pedido p;
-            while ( (p=(Pedido)oisPedidos.readObject()) != null){
-                 pedidos.add(p);
-            } 
-	} catch (FileNotFoundException e) {
-                 System.out.println(e.toString());    
-        } catch (EOFException e){
-                 System.out.println("Finalizada la lectura del archivo pedidos.dat");
+
+        try (ObjectInputStream oisClientes = new ObjectInputStream(new FileInputStream("archivos/clientes.dat"))) {
+            Cliente c;
+            while ((c = (Cliente) oisClientes.readObject()) != null) {
+                clientes.put(c.getIdCliente(), c);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo clientes.dat");
         } catch (ClassNotFoundException | IOException e) {
-                System.out.println(e.toString()); 
+            System.out.println(e.toString());
+        }
+
+        try (ObjectInputStream oisPedidos = new ObjectInputStream(new FileInputStream("archivos/pedidos.dat"))) {
+            Pedido p;
+            while ((p = (Pedido) oisPedidos.readObject()) != null) {
+                pedidos.add(p);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo pedidos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="EXPORTAR COLECCIONES">
-    public void exportarColecciones(){
-        try (ObjectOutputStream oosArticulos = new ObjectOutputStream(new FileOutputStream("archivos/articulos.dat"));
-            ObjectOutputStream oosClientes = new ObjectOutputStream(new FileOutputStream("archivos/clientes.dat"));
-            ObjectOutputStream oosPedidos = new ObjectOutputStream(new FileOutputStream("archivos/pedidos.dat"))){
-            
+    public void exportarColecciones() {
+        try (ObjectOutputStream oosArticulos = new ObjectOutputStream(new FileOutputStream("archivos/articulos.dat")); ObjectOutputStream oosClientes = new ObjectOutputStream(new FileOutputStream("archivos/clientes.dat")); ObjectOutputStream oosPedidos = new ObjectOutputStream(new FileOutputStream("archivos/pedidos.dat"))) {
+
             for (Articulo a : articulos.values()) {
                 oosArticulos.writeObject(a);
             }
@@ -942,15 +911,14 @@ public class PracticasTienda implements Serializable{
                 oosPedidos.writeObject(p);
             }
             System.out.println("Copia de seguridad realizada con exito");
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println("No se han podido crear los archivos correctamente");
         }
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CONEXION TIENDA CON BASE DATOS">
-    private void jdbcArticulos(){
+    private void jdbcArticulos() {
         String consulta = "SELECT * FROM articulos";
         try {
             PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
@@ -959,30 +927,29 @@ public class PracticasTienda implements Serializable{
             System.out.println(ex.toString());
         }
     }
-    
-    public void jdbcLeerArticulos(){
+
+    public void jdbcLeerArticulos() {
         Statement sentencia;
-        ArrayList <Articulo> articulosAux = new ArrayList();
+        ArrayList<Articulo> articulosAux = new ArrayList();
         String consultaSQL = "SELECT * FROM articulos";
-        try{
+        try {
             sentencia = Conexion.obtener().createStatement();
             ResultSet rs = sentencia.executeQuery(consultaSQL);
-            while (rs.next()){
+            while (rs.next()) {
                 articulosAux.add(new Articulo(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getDouble(4)));
             }
             System.out.println("ARTICULOS importados desde MySQL correctamente");
-        } catch(ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.toString());
         }
         articulosAux.stream().forEach(System.out::println);
     }
-    
-    
-    private void jdbcGuardarArticulos(){
+
+    private void jdbcGuardarArticulos() {
         String consulta;
-        for (Articulo a:articulos.values()){
+        for (Articulo a : articulos.values()) {
             consulta = "INSERT INTO `articulos` (`idArticulo`, `descripcion`, `existencias`, `pvp`)"
-                    + " VALUES ('" + a.getidArticulo()+"', '"+a.getDescripcion()+"', '"+a.getExistencias()+"', '" + a.getPvp()+"')";
+                    + " VALUES ('" + a.getidArticulo() + "', '" + a.getDescripcion() + "', '" + a.getExistencias() + "', '" + a.getPvp() + "')";
             try {
                 PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
                 ps.executeUpdate();
@@ -992,8 +959,8 @@ public class PracticasTienda implements Serializable{
         }
         System.out.println("ARTICULOS exportados a MySQL correctamente");
     }
-    
-    private void jdbcClientes(){
+
+    private void jdbcClientes() {
         String consulta = "SELECT * FROM clientes";
         try {
             PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
@@ -1002,29 +969,29 @@ public class PracticasTienda implements Serializable{
             System.out.println(ex.toString());
         }
     }
-    
-    public void jdbcLeerClientes(){
+
+    public void jdbcLeerClientes() {
         Statement sentencia;
-        ArrayList <Cliente> clientesAux = new ArrayList();
+        ArrayList<Cliente> clientesAux = new ArrayList();
         String consultaSQL = "SELECT * FROM clientes";
-        try{
+        try {
             sentencia = Conexion.obtener().createStatement();
             ResultSet rs = sentencia.executeQuery(consultaSQL);
-            while (rs.next()){
+            while (rs.next()) {
                 clientesAux.add(new Cliente(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
             }
             System.out.println("CLIENTES importados desde MySQL correctamente");
-        } catch(ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.toString());
         }
         clientesAux.stream().forEach(System.out::println);
     }
-    
-    private void jdbcGuardarClientes(){
+
+    private void jdbcGuardarClientes() {
         String consulta;
-        for (Cliente c:clientes.values()){
+        for (Cliente c : clientes.values()) {
             consulta = "INSERT INTO `clientes` (`idCliente`, `nombre`, `telefono`, `email`)"
-                    + " VALUES ('" + c.getIdCliente()+"', '"+c.getNombre()+"', '"+c.getTelefono()+"', '" + c.getEmail()+"')";
+                    + " VALUES ('" + c.getIdCliente() + "', '" + c.getNombre() + "', '" + c.getTelefono() + "', '" + c.getEmail() + "')";
             try {
                 PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
                 ps.executeUpdate();
@@ -1034,8 +1001,8 @@ public class PracticasTienda implements Serializable{
         }
         System.out.println("CLIENTES exportados a MySQL correctamente");
     }
-    
-    private void jdbcPedidos(){
+
+    private void jdbcPedidos() {
         String consulta = "SELECT * FROM pedidos";
         try {
             PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
@@ -1044,7 +1011,7 @@ public class PracticasTienda implements Serializable{
             System.out.println(ex.toString());
         }
     }
-    
+
     public void jdbcLeerPedidos() {
         Statement sentenciaPedidos, sentenciaLp;
         String consultaPedidos = "SELECT * FROM pedidos";
@@ -1060,21 +1027,21 @@ public class PracticasTienda implements Serializable{
                     cestaCompra.add(new LineaPedido(articulos.get(rsLp.getString(2)), rsLp.getInt(3)));
                 }
                 pedidos.add(new Pedido(rsPedidos.getString(1), clientes.get(rsPedidos.getString(2)),
-                         LocalDate.parse(rsPedidos.getString(3)), cestaCompra));
+                        LocalDate.parse(rsPedidos.getString(3)), cestaCompra));
             }
             System.out.println("\nPEDIDOS importados desde MySQL correctamente");
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.toString());
         }
     }
-    
-    private void jdbcGuardarPedidos(){
-        for (Pedido p:pedidos){
-            String consulta1= "INSERT INTO `pedidos` (`idPedido`, `clientePedido`, `fechaPedido`)"
-                    + " VALUES ('" + p.getIdPedido()+"', '"+p.getClientePedido().getIdCliente()+"','"+p.getFechaPedido()+"')";
-            for (LineaPedido l:p.getCestaCompra()){
-                String consulta2= "INSERT INTO `lineaspedidos` (`idPedido`, `idArticulo`, `unidades`)"
-                    + " VALUES ('" + p.getIdPedido()+"', '"+l.getArticulo().getidArticulo()+"','"+l.getUnidades()+"')";
+
+    private void jdbcGuardarPedidos() {
+        for (Pedido p : pedidos) {
+            String consulta1 = "INSERT INTO `pedidos` (`idPedido`, `clientePedido`, `fechaPedido`)"
+                    + " VALUES ('" + p.getIdPedido() + "', '" + p.getClientePedido().getIdCliente() + "','" + p.getFechaPedido() + "')";
+            for (LineaPedido l : p.getCestaCompra()) {
+                String consulta2 = "INSERT INTO `lineaspedidos` (`idPedido`, `idArticulo`, `unidades`)"
+                        + " VALUES ('" + p.getIdPedido() + "', '" + l.getArticulo().getidArticulo() + "','" + l.getUnidades() + "')";
                 try {
                     PreparedStatement ps = Conexion.obtener().prepareStatement(consulta2);
                     ps.executeUpdate();
@@ -1092,7 +1059,93 @@ public class PracticasTienda implements Serializable{
         System.out.println("PEDIDOS exportados a MySQL correctamente");
     }
     //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="REPASO RECUPERACION JULIO">
+    private void menuEjerciciosRepaso() {
+        int opcion;
+        do {
+            System.out.println("\t MENU DE OPCIONES");
+            System.out.println("\t --> 1 - EJERCICIO 1");
+            System.out.println("\t --> 2 - EJERCICIO 2");
+            System.out.println("\t --> 3 - EJERCICIO 3");
+            System.out.println("\t --> 4 - EJERCICIO 4");
+            System.out.println("\t --> 5 - EJERCICIO 5");
+            System.out.println("\t --> 6 - SALIR");
+
+            opcion = sc.nextInt();
+
+            switch (opcion) {
+                case 1: {
+                    ejercicioRepasoI();
+                    break;
+                }
+                case 2: {
+                    ejercicioRepasoII();
+                    break;
+                }
+                case 3: {
+                    ejercicioRepasoIII();
+                    break;
+                }
+                case 4: {
+                    ejercicioRepasoIV();
+                    break;
+                }
+                case 5: {
+                    ejercicioRepasoV();
+                    break;
+                }
+            }
+        } while (opcion != 6);
+    }
+
+    private void ejercicioRepasoI() {
+        System.out.println("Guarda un registro de todos los pedidos de la tienda en un archivo llamado facturas.csv."
+        + "Los datos deben estar separados por comas \",\" y seguir este formato exacto:"
+        + "idPedido, fechaPedido, nombreCliente, importeTotal");
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("facturas.csv"))) {
+            for (Pedido p : pedidos) {
+                bw.write(p.getIdPedido() + "," + p.getFechaPedido() + "," + p.getClientePedido().getNombre() + "," + importeTotal(p));
+                bw.newLine();
+            }
+            System.out.println("Se han podido escribir los clientes en el archivo .csv");
+        } catch (IOException e) {
+            System.out.println("No se han podido escribir los pedidos en el archivo .csv");
+        }
+    }
+
+    private void ejercicioRepasoII() {
+        System.out.println("Lee los datos del archivo facturas.csv que acabas de crear."
+        + "Crea una lista que incluya sólo aquellos pedidos cuyo importeTotal supere los 500 euros y se haya realizado en el año 2026."
+        + "Finalmente, imprime esa lista por pantalla mostrando el ID del pedido y el importe.");
+    }
+
+    private void ejercicioRepasoIII() {
+        System.out.println("A partir del HashMap de artículos, crea un método que clasifique el inventario en tres listas distintas según su nivel de stock:"
+        + "\n" + "stockCritico: Artículos con 5 o menos unidades."
+        + "\n" + "stockNormal: Artículos entre 6 y 20 unidades."
+        + "\n" + "stockAlto: Artículos con más de 20 unidades."
+        + "\n" + "Requisito indispensable: Antes de mostrar por pantalla el contenido de cada lista, los artículos deben estar ordenados alfabéticamente.");
+    }
+
+    private void ejercicioRepasoIV() {
+        
+    }
+
+    private void ejercicioRepasoV() {
+
+    }
     
+    public double importeTotal(Pedido p) {
+        double importeTotal = 0;
+        for (LineaPedido l : p.getCestaCompra()) {
+            importeTotal += l.getUnidades() * l.getArticulo().getPvp();
+        }
+        return importeTotal;
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="CARGA DATOS">
     public void cargaDatos() {
         clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
@@ -1120,5 +1173,5 @@ public class PracticasTienda implements Serializable{
         pedidos.add(new Pedido("63921307Y-001/2026", clientes.get("63921307Y"), LocalDate.parse("2026-03-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
     }
     //</editor-fold>
-    
+
 } //Llave final
