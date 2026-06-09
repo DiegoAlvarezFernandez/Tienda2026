@@ -37,9 +37,9 @@ import java.sql.Statement;
  *
  * @author 1dawd21
  */
-//<editor-fold defaultstate="collapsed" desc="CLASES">
 
-public class PracticasTienda implements Serializable {
+    //<editor-fold defaultstate="collapsed" desc="CLASES">
+    public class PracticasTienda implements Serializable {
 
     private static final transient Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
@@ -1100,9 +1100,13 @@ public class PracticasTienda implements Serializable {
     }
 
     private void ejercicioRepasoI() {
+        System.out.println("\nENUNCIADO EJERCICIO 1:");
+        
         System.out.println("Guarda un registro de todos los pedidos de la tienda en un archivo llamado facturas.csv."
-        + "Los datos deben estar separados por comas \",\" y seguir este formato exacto:"
-        + "idPedido, fechaPedido, nombreCliente, importeTotal");
+        + "\n" + "Los datos deben estar separados por comas y seguir el siguiente formato:"
+        + "\n" + "idPedido, fechaPedido, nombreCliente, importeTotal");
+        
+        System.out.println("\nSOLUCION EJERCICIO 1:");
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("facturas.csv"))) {
             for (Pedido p : pedidos) {
@@ -1113,28 +1117,127 @@ public class PracticasTienda implements Serializable {
         } catch (IOException e) {
             System.out.println("No se han podido escribir los pedidos en el archivo .csv");
         }
+        System.out.println("");
     }
 
     private void ejercicioRepasoII() {
+        System.out.println("\nENUNCIADO EJERCICIO 2:");
+        
         System.out.println("Lee los datos del archivo facturas.csv que acabas de crear."
-        + "Crea una lista que incluya sólo aquellos pedidos cuyo importeTotal supere los 500 euros y se haya realizado en el año 2026."
-        + "Finalmente, imprime esa lista por pantalla mostrando el ID del pedido y el importe.");
+        + "\n" + "Crea una lista que incluya solo aquellos pedidos cuyo importeTotal supere los 500 euros y se haya realizado en el ano 2026."
+        + "\n" + "Finalmente, imprime esa lista por pantalla mostrando el ID del pedido y el importe.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 2:");
+
+        List<String> pedidosFiltrados = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("facturas.csv"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+
+                String[] campos = linea.split(",");
+
+                String idPedido = campos[0];
+                LocalDate fechaPedido = LocalDate.parse(campos[1]);
+                String nombreCliente = campos[2];
+                double importe = Double.parseDouble(campos[3]);
+                if (importe > 500 && fechaPedido.getYear() == 2026) {
+                    String info = idPedido + "," + nombreCliente + "," + fechaPedido;
+                    pedidosFiltrados.add(info);
+                }
+            }
+
+            System.out.println("Se han podido leer los datos del archivo .csv. Esta es la lista que se pide:");
+            for (String p : pedidosFiltrados) {
+                System.out.println(p);
+            }
+
+        } catch (IOException e) {
+            System.out.println("No se han podido leer los datos del archivo .csv");
+        }
+        System.out.println("");
     }
 
     private void ejercicioRepasoIII() {
-        System.out.println("A partir del HashMap de artículos, crea un método que clasifique el inventario en tres listas distintas según su nivel de stock:"
-        + "\n" + "stockCritico: Artículos con 5 o menos unidades."
-        + "\n" + "stockNormal: Artículos entre 6 y 20 unidades."
-        + "\n" + "stockAlto: Artículos con más de 20 unidades."
-        + "\n" + "Requisito indispensable: Antes de mostrar por pantalla el contenido de cada lista, los artículos deben estar ordenados alfabéticamente.");
+        System.out.println("\nENUNCIADO EJERCICIO 3:");
+        
+        System.out.println("A partir del HashMap de articulos, crea un metodo que clasifique el inventario en tres listas distintas segun su nivel de stock:"
+        + "\n" + "stockCritico: Articulos con 5 o menos unidades."
+        + "\n" + "stockNormal: Articulos entre 6 y 20 unidades."
+        + "\n" + "stockAlto: Articulos con mas de 20 unidades."
+        + "\n" + "Requisito indispensable: Antes de mostrar por pantalla el contenido de cada lista, los articulos deben estar ordenados alfabeticamente.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 3:");
+        
+        List<Articulo> stockCritico = new ArrayList<>();
+        List<Articulo> stockNormal = new ArrayList<>();
+        List<Articulo> stockAlto = new ArrayList<>();
+
+        for (Articulo a : articulos.values()) {
+            int stock = a.getExistencias();
+
+            if (stock <= 5) {
+                stockCritico.add(a);
+            } else if (stock <= 20) {
+                stockNormal.add(a);
+            } else {
+                stockAlto.add(a);
+            }
+        }
+
+        stockCritico.sort(Comparator.comparing(Articulo::getDescripcion));
+        stockNormal.sort(Comparator.comparing(Articulo::getDescripcion));
+        stockAlto.sort(Comparator.comparing(Articulo::getDescripcion));
+
+        System.out.println("Stock critico (0 - 5 unidades):");
+        for (Articulo a : stockCritico) {
+            System.out.println("Este articulo se encuentra en stock critico: " + a.getDescripcion() + ", con " + a.getExistencias() + " existencias.");
+        }
+
+        System.out.println("\nStock normal (6 - 20 unidades):");
+        for (Articulo a : stockNormal) {
+            System.out.println("Este articulo se encuentra en stock normal: " + a.getDescripcion() + ", con " + a.getExistencias() + " existencias.");
+        }
+
+        System.out.println("\nStock alto (+20 unidades):");
+        for (Articulo a : stockAlto) {
+            System.out.println("Este articulo se encuentra en stock alto: " + a.getDescripcion() + ", con " + a.getExistencias() + " existencias.");
+        }
+        System.out.println("");
     }
 
     private void ejercicioRepasoIV() {
+        System.out.println("\nENUNCIADO EJERCICIO 4:");
         
+        System.out.println("El departamento de marketing necesita un informe de los clientes VIP del sector informatico."
+        + "\n" + "Genera una lista de aquellos clientes que hayan comprado, en toda la historia de la tienda, al menos un articulo que pertenezca a la seccion MONITORES.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 4:");
+        
+        pedidos.stream().filter(p -> p.getCestaCompra().stream()
+                        .anyMatch(lp -> lp.getArticulo().getDescripcion().equalsIgnoreCase("MONITORES")))
+                        .map(p -> p.getClientePedido().getNombre())
+                        .forEach(nombre -> System.out.println(nombre));
+        System.out.println("");
     }
 
     private void ejercicioRepasoV() {
+        System.out.println("\nENUNCIADO EJERCICIO 5:");
+        
+        System.out.println("Crea un metodo que pida al usuario introducir por teclado un ID de Articulo."
+        + "\n" + "Utilizando streams, el metodo debe calcular y mostrar por pantalla la cantidad total de dinero que ha generado ese articulo en ventas.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 5:");
+        
+        Scanner sc = new Scanner(System.in);
+        System.out.print("\nIntroduce el ID del articulo para calcular sus ganancias: ");
+        String idBuscado = sc.nextLine();
 
+        double totalGenerado = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
+                                               .filter(lp -> lp.getArticulo().getidArticulo().equalsIgnoreCase(idBuscado))
+                                               .mapToDouble(lp -> lp.getUnidades() * lp.getArticulo().getPvp()) 
+                                               .sum();
+        System.out.println("El articulo con ID: " + idBuscado + " ha generado un total de: " + totalGenerado + " euros");
+        System.out.println("");
     }
     
     public double importeTotal(Pedido p) {
