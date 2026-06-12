@@ -37,9 +37,8 @@ import java.sql.Statement;
  *
  * @author 1dawd21
  */
-
-    //<editor-fold defaultstate="collapsed" desc="CLASES">
-    public class PracticasTienda implements Serializable {
+//<editor-fold defaultstate="collapsed" desc="CLASES">
+public class PracticasTienda implements Serializable {
 
     private static final transient Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
@@ -1109,11 +1108,11 @@ import java.sql.Statement;
 
     private void ejercicioRepasoI() {
         System.out.println("\nENUNCIADO EJERCICIO 1:");
-        
+
         System.out.println("Guarda un registro de todos los pedidos de la tienda en un archivo llamado facturas.csv."
-        + "\n" + "Los datos deben estar separados por comas y seguir el siguiente formato:"
-        + "\n" + "idPedido, fechaPedido, nombreCliente, importeTotal");
-        
+                + "\n" + "Los datos deben estar separados por comas y seguir el siguiente formato:"
+                + "\n" + "idPedido, fechaPedido, nombreCliente, importeTotal");
+
         System.out.println("\nSOLUCION EJERCICIO 1:");
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("facturas.csv"))) {
@@ -1130,11 +1129,11 @@ import java.sql.Statement;
 
     private void ejercicioRepasoII() {
         System.out.println("\nENUNCIADO EJERCICIO 2:");
-        
+
         System.out.println("Lee los datos del archivo facturas.csv que acabas de crear."
-        + "\n" + "Crea una lista que incluya solo aquellos pedidos cuyo importeTotal supere los 500 euros y se haya realizado en el ano 2026."
-        + "\n" + "Finalmente, imprime esa lista por pantalla mostrando el ID del pedido y el importe.");
-        
+                + "\n" + "Crea una lista que incluya solo aquellos pedidos cuyo importeTotal supere los 500 euros y se haya realizado en el ano 2026."
+                + "\n" + "Finalmente, imprime esa lista por pantalla mostrando el ID del pedido y el importe.");
+
         System.out.println("\nSOLUCION EJERCICIO 2:");
 
         List<String> pedidosFiltrados = new ArrayList<>();
@@ -1167,15 +1166,15 @@ import java.sql.Statement;
 
     private void ejercicioRepasoIII() {
         System.out.println("\nENUNCIADO EJERCICIO 3:");
-        
+
         System.out.println("A partir del HashMap de articulos, crea un metodo que clasifique el inventario en tres listas distintas segun su nivel de stock:"
-        + "\n" + "stockCritico: Articulos con 5 o menos unidades."
-        + "\n" + "stockNormal: Articulos entre 6 y 20 unidades."
-        + "\n" + "stockAlto: Articulos con mas de 20 unidades."
-        + "\n" + "Requisito indispensable: Antes de mostrar por pantalla el contenido de cada lista, los articulos deben estar ordenados alfabeticamente.");
-        
+                + "\n" + "stockCritico: Articulos con 5 o menos unidades."
+                + "\n" + "stockNormal: Articulos entre 6 y 20 unidades."
+                + "\n" + "stockAlto: Articulos con mas de 20 unidades."
+                + "\n" + "Requisito indispensable: Antes de mostrar por pantalla el contenido de cada lista, los articulos deben estar ordenados alfabeticamente.");
+
         System.out.println("\nSOLUCION EJERCICIO 3:");
-        
+
         List<Articulo> stockCritico = new ArrayList<>();
         List<Articulo> stockNormal = new ArrayList<>();
         List<Articulo> stockAlto = new ArrayList<>();
@@ -1215,61 +1214,60 @@ import java.sql.Statement;
 
     private void ejercicioRepasoIV() {
         System.out.println("\nENUNCIADO EJERCICIO 4:");
-        
+
         System.out.println("El departamento de marketing necesita un informe de los clientes VIP del sector informatico."
-        + "\n" + "Genera una lista de aquellos clientes que hayan comprado, en toda la historia de la tienda, al menos un articulo que pertenezca a la seccion MONITORES.");
-        
+                + "\n" + "Genera una lista de aquellos clientes que hayan comprado, en toda la historia de la tienda, al menos un articulo que pertenezca a la seccion MONITORES.");
+
         System.out.println("\nSOLUCION EJERCICIO 4:");
-        
+
         pedidos.stream().filter(p -> p.getCestaCompra().stream()
-                        .anyMatch(lp -> lp.getArticulo().getDescripcion().equalsIgnoreCase("MONITORES")))
-                        .map(p -> p.getClientePedido().getNombre())
-                        .forEach(nombre -> System.out.println(nombre));
+                .anyMatch(lp -> lp.getArticulo().getDescripcion().equalsIgnoreCase("MONITORES")))
+                .map(p -> p.getClientePedido().getNombre())
+                .forEach(nombre -> System.out.println(nombre));
         System.out.println("");
     }
 
     private void ejercicioRepasoV() {
         System.out.println("\nENUNCIADO EJERCICIO 5:");
-        
+
         System.out.println("Crea un metodo que pida al usuario introducir por teclado un ID de Articulo."
-        + "\n" + "Utilizando streams, el metodo debe calcular y mostrar por pantalla la cantidad total de dinero que ha generado ese articulo en ventas.");
-        
+                + "\n" + "Utilizando streams, el metodo debe calcular y mostrar por pantalla la cantidad total de dinero que ha generado ese articulo en ventas.");
+
         System.out.println("\nSOLUCION EJERCICIO 5:");
-        
+
         Scanner sc = new Scanner(System.in);
         System.out.print("Introduce el ID del articulo para calcular sus ganancias: ");
         String idBuscado = sc.nextLine();
 
         double totalGenerado = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
-                                               .filter(lp -> lp.getArticulo().getidArticulo().equalsIgnoreCase(idBuscado))
-                                               .mapToDouble(lp -> lp.getUnidades() * lp.getArticulo().getPvp()) 
-                                               .sum();
+                .filter(lp -> lp.getArticulo().getidArticulo().equalsIgnoreCase(idBuscado))
+                .mapToDouble(lp -> lp.getUnidades() * lp.getArticulo().getPvp())
+                .sum();
         System.out.println("El articulo " + idBuscado + " ha generado un total de: " + totalGenerado + " euros");
         System.out.println("");
     }
-    
-    private void ejercicioRepasoVI(){
+
+    private void ejercicioRepasoVI() {
         System.out.println("\nENUNCIADO EJERCICIO 6:");
-        
+
         System.out.println("A partir de tu lista de pedidos, el profesor quiere que crees dos listas (ArrayList) separadas:"
-        + "\n" + "pedidosVIP: Pedidos cuyo importe total supere los 500 euros."
-        + "\n" + "pedidosNormales: Pedidos de 500 euros o menos."
-        + "\n" + "Una vez separadas, debes ordenar ambas listas por la fecha del pedido (de mas antiguo a mas reciente) y mostrarlas por pantalla.");
-        
+                + "\n" + "pedidosVIP: Pedidos cuyo importe total supere los 500 euros."
+                + "\n" + "pedidosNormales: Pedidos de 500 euros o menos."
+                + "\n" + "Una vez separadas, debes ordenar ambas listas por la fecha del pedido (de mas antiguo a mas reciente) y mostrarlas por pantalla.");
+
         System.out.println("\nSOLUCION EJERCICIO 6:");
-        
+
         List<Pedido> pedidosVIP = new ArrayList();
         List<Pedido> pedidosNormales = new ArrayList();
-        
-        for (Pedido p : pedidos){
+
+        for (Pedido p : pedidos) {
             if (importeTotal(p) > 500) {
                 pedidosVIP.add(p);
-            }
-            else {
+            } else {
                 pedidosNormales.add(p);
             }
         }
-        
+
         pedidosVIP.sort(Comparator.comparing(Pedido::getFechaPedido));
         pedidosNormales.sort(Comparator.comparing(Pedido::getFechaPedido));
 
@@ -1277,32 +1275,32 @@ import java.sql.Statement;
         for (Pedido p : pedidosVIP) {
             System.out.println(pedidosVIP);
         }
-        
+
         System.out.println("\nLista de pedidosNormales");
         for (Pedido p : pedidosNormales) {
             System.out.println(pedidosNormales);
         }
     }
-    
-    private void ejercicioRepasoVII(){
+
+    private void ejercicioRepasoVII() {
         System.out.println("\nENUNCIADO EJERCICIO 7:");
-        
+
         System.out.println("Utilizando el API de Streams, coge la lista de pedidos de la tienda y agrúpalos por el nombre de su cliente."
-        + "\n" + "El resultado debe guardarse en un Map<String, List<Pedido>>."
-        + "\n" + "Finalmente, recorre ese mapa para imprimir por pantalla el nombre del cliente y cuántos pedidos ha realizado.");
-        
+                + "\n" + "El resultado debe guardarse en un Map<String, List<Pedido>>."
+                + "\n" + "Finalmente, recorre ese mapa para imprimir por pantalla el nombre del cliente y cuántos pedidos ha realizado.");
+
         System.out.println("\nSOLUCION EJERCICIO 7:");
-        
-        Map<String, List<Pedido>> pedidosPorCliente = 
-        pedidos.stream()
-               .collect(Collectors.groupingBy(p -> p.getClientePedido().getNombre()));
-        
+
+        Map<String, List<Pedido>> pedidosPorCliente
+                = pedidos.stream()
+                        .collect(Collectors.groupingBy(p -> p.getClientePedido().getNombre()));
+
         for (String nombreCliente : pedidosPorCliente.keySet()) {
             List<Pedido> listaSusPedidos = pedidosPorCliente.get(nombreCliente);
-        System.out.println(pedidosPorCliente);
+            System.out.println(pedidosPorCliente);
         }
     }
-    
+
     public double importeTotal(Pedido p) {
         double importeTotal = 0;
         for (LineaPedido l : p.getCestaCompra()) {
