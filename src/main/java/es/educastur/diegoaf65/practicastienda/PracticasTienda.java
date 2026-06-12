@@ -1070,7 +1070,9 @@ import java.sql.Statement;
             System.out.println("\t --> 3 - EJERCICIO 3");
             System.out.println("\t --> 4 - EJERCICIO 4");
             System.out.println("\t --> 5 - EJERCICIO 5");
-            System.out.println("\t --> 6 - SALIR");
+            System.out.println("\t --> 6 - EJERCICIO 6");
+            System.out.println("\t --> 6 - EJERCICIO 7");
+            System.out.println("\t --> 8 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -1095,8 +1097,14 @@ import java.sql.Statement;
                     ejercicioRepasoV();
                     break;
                 }
+                case 6: {
+                    ejercicioRepasoVI();
+                }
+                case 7: {
+                    ejercicioRepasoVII();
+                }
             }
-        } while (opcion != 6);
+        } while (opcion != 8);
     }
 
     private void ejercicioRepasoI() {
@@ -1229,15 +1237,70 @@ import java.sql.Statement;
         System.out.println("\nSOLUCION EJERCICIO 5:");
         
         Scanner sc = new Scanner(System.in);
-        System.out.print("\nIntroduce el ID del articulo para calcular sus ganancias: ");
+        System.out.print("Introduce el ID del articulo para calcular sus ganancias: ");
         String idBuscado = sc.nextLine();
 
         double totalGenerado = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
                                                .filter(lp -> lp.getArticulo().getidArticulo().equalsIgnoreCase(idBuscado))
                                                .mapToDouble(lp -> lp.getUnidades() * lp.getArticulo().getPvp()) 
                                                .sum();
-        System.out.println("El articulo con ID: " + idBuscado + " ha generado un total de: " + totalGenerado + " euros");
+        System.out.println("El articulo " + idBuscado + " ha generado un total de: " + totalGenerado + " euros");
         System.out.println("");
+    }
+    
+    private void ejercicioRepasoVI(){
+        System.out.println("\nENUNCIADO EJERCICIO 6:");
+        
+        System.out.println("A partir de tu lista de pedidos, el profesor quiere que crees dos listas (ArrayList) separadas:"
+        + "\n" + "pedidosVIP: Pedidos cuyo importe total supere los 500 euros."
+        + "\n" + "pedidosNormales: Pedidos de 500 euros o menos."
+        + "\n" + "Una vez separadas, debes ordenar ambas listas por la fecha del pedido (de mas antiguo a mas reciente) y mostrarlas por pantalla.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 6:");
+        
+        List<Pedido> pedidosVIP = new ArrayList();
+        List<Pedido> pedidosNormales = new ArrayList();
+        
+        for (Pedido p : pedidos){
+            if (importeTotal(p) > 500) {
+                pedidosVIP.add(p);
+            }
+            else {
+                pedidosNormales.add(p);
+            }
+        }
+        
+        pedidosVIP.sort(Comparator.comparing(Pedido::getFechaPedido));
+        pedidosNormales.sort(Comparator.comparing(Pedido::getFechaPedido));
+
+        System.out.println("Lista de pedidosVIP:");
+        for (Pedido p : pedidosVIP) {
+            System.out.println(pedidosVIP);
+        }
+        
+        System.out.println("\nLista de pedidosNormales");
+        for (Pedido p : pedidosNormales) {
+            System.out.println(pedidosNormales);
+        }
+    }
+    
+    private void ejercicioRepasoVII(){
+        System.out.println("\nENUNCIADO EJERCICIO 7:");
+        
+        System.out.println("Utilizando el API de Streams, coge la lista de pedidos de la tienda y agrúpalos por el nombre de su cliente."
+        + "\n" + "El resultado debe guardarse en un Map<String, List<Pedido>>."
+        + "\n" + "Finalmente, recorre ese mapa para imprimir por pantalla el nombre del cliente y cuántos pedidos ha realizado.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 7:");
+        
+        Map<String, List<Pedido>> pedidosPorCliente = 
+        pedidos.stream()
+               .collect(Collectors.groupingBy(p -> p.getClientePedido().getNombre()));
+        
+        for (String nombreCliente : pedidosPorCliente.keySet()) {
+            List<Pedido> listaSusPedidos = pedidosPorCliente.get(nombreCliente);
+        System.out.println(pedidosPorCliente);
+        }
     }
     
     public double importeTotal(Pedido p) {
