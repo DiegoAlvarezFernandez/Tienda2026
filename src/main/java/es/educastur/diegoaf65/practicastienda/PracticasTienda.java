@@ -37,7 +37,8 @@ import java.sql.Statement;
  *
  * @author 1dawd21
  */
-//<editor-fold defaultstate="collapsed" desc="CLASES">
+
+    //<editor-fold defaultstate="collapsed" desc="CLASES">
 public class PracticasTienda implements Serializable {
 
     private static final transient Scanner sc = new Scanner(System.in);
