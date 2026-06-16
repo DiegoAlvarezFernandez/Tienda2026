@@ -1070,8 +1070,13 @@ public class PracticasTienda implements Serializable {
             System.out.println("\t --> 4 - EJERCICIO 4");
             System.out.println("\t --> 5 - EJERCICIO 5");
             System.out.println("\t --> 6 - EJERCICIO 6");
-            System.out.println("\t --> 6 - EJERCICIO 7");
-            System.out.println("\t --> 8 - SALIR");
+            System.out.println("\t --> 7 - EJERCICIO 7");
+            System.out.println("\t --> 8 - EJERCICIO 8");
+            System.out.println("\t --> 9 - EJERCICIO 9");
+            System.out.println("\t --> 10 - EJERCICIO 10");
+            System.out.println("\t --> 11 - EJERCICIO 11");
+            System.out.println("\t --> 12 - EJERCICIO 12");
+            System.out.println("\t --> 13 - SALIR");
 
             opcion = sc.nextInt();
 
@@ -1102,8 +1107,23 @@ public class PracticasTienda implements Serializable {
                 case 7: {
                     ejercicioRepasoVII();
                 }
+                case 8: {
+                    ejercicioRepasoVIII();
+                }
+                case 9: {
+                    ejercicioRepasoIX();
+                }
+                case 10: {
+                    ejercicioRepasoX();
+                }
+                case 11: {
+                    ejercicioRepasoXI();
+                }
+                case 12: {
+                    ejercicioRepasoXII();
+                }
             }
-        } while (opcion != 8);
+        } while (opcion != 13);
     }
 
     private void ejercicioRepasoI() {
@@ -1124,6 +1144,7 @@ public class PracticasTienda implements Serializable {
         } catch (IOException e) {
             System.out.println("No se han podido escribir los pedidos en el archivo .csv");
         }
+        
         System.out.println("");
     }
 
@@ -1161,6 +1182,7 @@ public class PracticasTienda implements Serializable {
         } catch (IOException e) {
             System.out.println("No se han podido leer los datos del archivo .csv");
         }
+        
         System.out.println("");
     }
 
@@ -1209,6 +1231,7 @@ public class PracticasTienda implements Serializable {
         for (Articulo a : stockAlto) {
             System.out.println("Este articulo se encuentra en stock alto: " + a.getDescripcion() + ", con " + a.getExistencias() + " existencias.");
         }
+        
         System.out.println("");
     }
 
@@ -1224,6 +1247,7 @@ public class PracticasTienda implements Serializable {
                 .anyMatch(lp -> lp.getArticulo().getDescripcion().equalsIgnoreCase("MONITORES")))
                 .map(p -> p.getClientePedido().getNombre())
                 .forEach(nombre -> System.out.println(nombre));
+        
         System.out.println("");
     }
 
@@ -1244,6 +1268,7 @@ public class PracticasTienda implements Serializable {
                 .mapToDouble(lp -> lp.getUnidades() * lp.getArticulo().getPvp())
                 .sum();
         System.out.println("El articulo " + idBuscado + " ha generado un total de: " + totalGenerado + " euros");
+        
         System.out.println("");
     }
 
@@ -1280,6 +1305,8 @@ public class PracticasTienda implements Serializable {
         for (Pedido p : pedidosNormales) {
             System.out.println(pedidosNormales);
         }
+        
+        System.out.println("");
     }
 
     private void ejercicioRepasoVII() {
@@ -1299,6 +1326,131 @@ public class PracticasTienda implements Serializable {
             List<Pedido> listaSusPedidos = pedidosPorCliente.get(nombreCliente);
             System.out.println(pedidosPorCliente);
         }
+        
+        System.out.println("");
+    }
+    
+    private void ejercicioRepasoVIII() {
+        System.out.println("\nENUNCIADO EJERCICIO 8:");
+        
+        System.out.println("El almacen se esta quedando vacio."
+                + "\n" + "Recorre tu coleccion de articulos y mete en una nueva lista llamada stockCritico aquellos que tengan menos de 5 unidades en stock."
+                + "\n" + "Una vez metidos, ordena esa lista de mayor a menor precio (PVP) para saber que es lo mas caro que nos urge reponer.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 8:");
+        
+        List<Articulo> stockCritico = new ArrayList<>();
+        
+        for (Articulo a : articulos.values()) {
+            if (a.getExistencias() < 5) {
+                stockCritico.add(a);
+            }
+        }
+        
+        stockCritico.sort(Comparator.comparing(Articulo::getPvp).reversed());
+        
+        for (Articulo a : stockCritico) {
+            System.out.println(a.getDescripcion() + ", " + a.getExistencias() + ", " + a.getPvp());
+        }
+        
+        System.out.println("");
+    }
+    
+    private void ejercicioRepasoIX() {
+        System.out.println("\nENUNCIADO EJERCICIO 9:");
+        
+        System.out.println("Queremos reestructurar la tienda en base a los precios."
+                + "\n" + "Crea dos listas vacias: articulosPremium y articulosBatalla."
+                + "\n" + "Recorre tus articulos: si el PVP es mayor de 100 euros, va a Premium; si es menor o igual, a Batalla."
+                + "\n" + "Al final, ordena ambas listas alfabeticamente por su descripcion y muestralas por pantalla.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 9:");
+        
+        List<Articulo> articulosPremium = new ArrayList<>();
+        List<Articulo> articulosBatalla = new ArrayList<>();
+        
+        for (Articulo a : articulos.values()) {
+            if (a.getPvp() > 100) {
+                articulosPremium.add(a);
+            } else {
+                articulosBatalla.add(a);
+            }
+        }
+        
+        articulosPremium.sort(Comparator.comparing(Articulo::getDescripcion));
+        articulosBatalla.sort(Comparator.comparing(Articulo::getDescripcion));
+        
+        for (Articulo a : articulosPremium) {
+            System.out.println(a.getDescripcion());
+        }
+        
+        for (Articulo a : articulosBatalla) {
+            System.out.println(a.getDescripcion());
+        }
+        
+        System.out.println("");
+    }
+    
+    private void ejercicioRepasoX() {
+        System.out.println("\nENUNCIADO EJERCICIO 10:");
+        
+        System.out.println("Coge tu lista de pedidos y, usando Streams y groupingBy, agrupalos por el ano en el que se realizaron."
+                + "\n" + "El resultado debe guardarse en un Map<Integer, List<Pedido>>."
+                + "\n" + "Luego, recorre el mapa con un for clasico para imprimir el ano y cuantos pedidos se hicieron en total ese ano.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 10:");
+        
+        Map<Integer, List<Pedido>> pedidosPorAno = 
+        pedidos.stream().collect(Collectors.groupingBy(p -> p.getFechaPedido().getYear()));
+        
+        for (Integer ano : pedidosPorAno.keySet()) {
+        List<Pedido> listaAno = pedidosPorAno.get(ano);
+        System.out.println("Ano " + ano + ": " + listaAno.size() + " pedidos realizados.");
+        }
+        
+        System.out.println("");
+    }
+    
+    private void ejercicioRepasoXI() {
+        System.out.println("\nENUNCIADO EJERCICIO 11:");
+        
+        System.out.println("Igual que el anterior, pero esta vez queremos agrupar los pedidos por el mes de la compra."
+                + "\n" + "Guarda el resultado en un Map<String, List<Pedido>> (o Map<Month, List<Pedido>>)."
+                + "\n" + "Recorre el mapa e imprime el nombre del mes y el numero de pedidos.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 11:");
+        
+        Map<String, List<Pedido>> pedidosPorMes = 
+        pedidos.stream().collect(Collectors.groupingBy(p -> p.getFechaPedido().getMonth().toString()));
+            
+        for (String mes : pedidosPorMes.keySet()) {
+            List<Pedido> listaMes = pedidosPorMes.get(mes);
+            System.out.println("En " + mes + ": " + listaMes.size() + " pedidos realizados.");
+        }
+        
+        System.out.println("");
+    }
+    
+    private void ejercicioRepasoXII() {
+        System.out.println("\nENUNCIADO EJERCICIO 12:");
+        
+        System.out.println("Imagina que en tu clase cliente hay un metodo llamado getProvincia() (o si no lo tienes, hazlo con el getNombre())."
+                + "\n" + "Primero, filtra los pedidos de la tienda y quedate solo con los que superen los 100 euros de importe total."
+                + "\n" + "Segundo, coge esos pedidos filtrados y agrupalos por el nombre del cliente usando groupingBy."
+                + "\n" + "Tercero, muestra por pantalla el nombre del cliente y cuantos pedidos de mas de 100 euros ha hecho.");
+        
+        System.out.println("\nSOLUCION EJERCICIO 12:");
+        
+        Map<String, List<Pedido>> pedidosCarosPorCliente = 
+        pedidos.stream().filter(p -> importeTotal(p) > 100)
+               .collect(Collectors.groupingBy(p -> p.getClientePedido().getNombre()));
+        
+        for (String nombreCliente : pedidosCarosPorCliente.keySet()) {
+           List<Pedido> listaSusPedidos = pedidosCarosPorCliente.get(nombreCliente);
+           System.out.println(nombreCliente + " tiene " + listaSusPedidos.size() + " pedidos superiores a 100 euros.");
+        }
+        
+        System.out.println("");
     }
 
     public double importeTotal(Pedido p) {
